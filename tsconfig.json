@@ -25,9 +25,13 @@
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
     "paths": {
-      "@root": ["./*"],
-      "@ax-ui/*": ["./source/system/starter/*"],
-      "@ax-core/*": []
+      "@sypher": ["./source/sypher"],
+      "@sy-utils": ["./source/controls/utils"],
+      "@sy-log": ["./source/controls/plugins/logger"],
+      "@sy-core": [".source/controls/*"],
+      "@sy-listener": ["./source/controls/listener/listener.ts"],
+      "@sy-handler": ["./source/controls/listener/handler/*"],
+      "@sy-login": ["./source/controls/logger/facebook-login.ts"]
     }
   },
   "include": ["**/*.js", "**/*.ts"],

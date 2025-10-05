@@ -1,0 +1,9 @@
+{
+  "prefix": "/",
+  "subprefix": "",
+  "maintenance": true,
+  "blacklist": ["", ""],
+  "developers": ["61554222594723", ""],
+  "moderators": ["", ""],
+  "administrators": ["", ""]
+}

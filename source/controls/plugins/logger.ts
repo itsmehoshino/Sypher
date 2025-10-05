@@ -9,10 +9,16 @@ const themes = {
   rose: gradient(["#FF69B4", "#FF8C94", "#FFC1CC", "#FFE4E1"]),
   sunflower: gradient(["#FFC107", "#FFCA28", "#FFD54F", "#FFECB3"]),
   default: gradient(["#4B5EAA", "#7B9FE7"]),
-};
+} as const;
 
-export function log(category, message, theme = "aqua") {
-  const selectedGradient = themes[theme.toLowerCase()] || themes.default;
+type _Themes = typeof themes;
+
+export interface Themes extends _Themes {}
+
+export type ThemeKeys = keyof Themes;
+
+export function log(category: string, message: unknown, theme: ThemeKeys = "flame") {
+  const selectedGradient = themes[theme] ?? themes.default;
   const colorizedCategory = chalk.bold(selectedGradient(` ${category} `));
-  console.log(`${colorizedCategory} ${message}`);
+  console.log(`${colorizedCategory}`, message);
 }
