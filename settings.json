@@ -1,9 +1,31 @@
 {
+  "fcaOptions": {
+    "listenEvents": true,
+    "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Safari/537.36",
+    "autoMarkRead": true,
+    "autoMarkDelivered": true,
+    "selfListen": false
+  },
   "prefix": "/",
-  "subprefix": "",
+  "subprefix": [""],
   "maintenance": true,
-  "blacklist": ["", ""],
-  "developers": ["61554222594723", ""],
-  "moderators": ["", ""],
-  "administrators": ["", ""]
+  "blacklist": [
+    "", 
+    ""
+  ],
+  "developers": [
+    "61554222594723",
+    "61562953433498", 
+    "61576050553170",
+    "100075058221244",
+    "100035041790471"
+  ],
+  "moderators": [
+    "", 
+    ""
+  ],
+  "administrators": [
+    "100080437087855", 
+    ""
+  ]
 }

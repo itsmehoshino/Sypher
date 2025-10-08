@@ -1,8 +1,8 @@
 ////import aibox from "aibox-client";
 import { log } from "@sy-log";
 import handleCommand from "./handler/commandHandler";
-//import handleEvent from "@sy-handler/eventHandler";
-//import handleReplies from "@sy-handler/replyHandler";
+import handleEvent from "./handler/eventHandler";
+//import handleReplies from "./handler/replyHandler";
 
 export default async function listener({ api, event }) {
   try {
@@ -11,7 +11,7 @@ export default async function listener({ api, event }) {
         await handleCommand({ api, event });
         break;
       case "event":
-        //await handleEvent({ api, event });
+        await handleEvent({ api, event });
         break;
       case "message_reply":
         //await handleReplies({ api, event });

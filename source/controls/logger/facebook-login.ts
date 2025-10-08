@@ -1,46 +1,39 @@
-import fs from "fs";
-import { login, API } from "ws3-fca";
+import login from "@dongdev/fca-unofficial";
+import { readFileSync } from "fs-extra";
 import { log } from "@sy-log";
 import listener from "@sy-listener";
 
-let credentials: { appState: unknown };
+let credentials;
 
-try { 
-  credentials = { appState: JSON.parse(fs.readFileSync("./appstate.json", "utf8")) };
+try {
+  credentials = { appState: JSON.parse(readFileSync("./appstate.json", "utf8")) };
 } catch (error) {
   log("ERROR", "appstate.json is missing or malformed.");
   process.exit(1);
 }
 
-export async function facebookLogin(): Promise<API> {
-  return new Promise<API>((resolve, reject) => {
-    login(credentials, (error: Error | null, api?: API | null) => {
-      if (error || !api) {
-        log("ERROR", "Login failed.");
-        return reject(error || new Error("API instance is null"));
-      }
-
-      log("LOGIN", "Welcome user.");
-
-      try {
-        api.listenMqtt(async (error: any, event?: unknown) => {
-          if (error) {
-            log(
-              "ERROR",
-              error === "Connection Closed"
-                ? "Connection Failed To Connect"
-                : error
-            );
-            return;
-          }
-          await listener({ api, event });
-        });
-      } catch (setupError) {
-        log("ERROR", `Failed to set up MQTT listener: ${setupError}`);
-        return reject(setupError);
-      }
-
-      resolve(api);
+export async function facebookLogin() {
+  const { config } = globalThis.Sypher;
+  login(credentials, (err, api) => {
+    api.setOptions({
+      listenEvents: config.fcaOptions.listenEvents,
+      selfListen: config.fcaOptions.selfListen,
+      autoMarkDelivery: config.fcaOptions.autoMarkDelivery,
+      autoMarkRead: config.fcaOptions.autoMarkRead,
+      userAgent: config.fcaOptions.userAgent,
     });
+    try {
+      api.listenMqtt((error, event) => {
+        if (error) {
+          if (error === "Connection closed.") {
+            console.error(`Error during API listen: ${error}`);
+          }
+          console.log(error);
+        }
+        listener({ api, event });
+      });
+    } catch (error) {
+      log("ERROR", "Error whilst listening: " + error);
+    }
   });
 }
