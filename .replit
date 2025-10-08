@@ -8,3 +8,26 @@ run = ["sh", "-c", "node index.js"]
 
 [agent]
 expertMode = true
+
+[workflows]
+runButton = "Project"
+
+[[workflows.workflow]]
+name = "Project"
+mode = "parallel"
+author = "agent"
+
+[[workflows.workflow.tasks]]
+task = "workflow.run"
+args = "Facebook Bot"
+
+[[workflows.workflow]]
+name = "Facebook Bot"
+author = "agent"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "node spawner.js"
+
+[workflows.workflow.metadata]
+outputType = "console"

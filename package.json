@@ -1,6 +1,6 @@
 {
   "dependencies": {
-    "@dongdev/fca-unofficial": "^2.0.20",
+    "@dongdev/fca-unofficial": "^2.0.21",
     "axios": "^1.11.0",
     "chalk": "^4.1.2",
     "dotenv": "^17.2.1",
