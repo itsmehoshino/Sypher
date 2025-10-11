@@ -21,6 +21,7 @@ export default async function commandHandler({ api, event }) {
     ];
     if (!allowedUsers.includes(event.senderID)) {
       await response.send("🚧 The bot is currently under maintenance. Please try again later.");
+      await response.react("🚧");
       return;
     }
   }
@@ -34,5 +35,6 @@ export default async function commandHandler({ api, event }) {
     }
   } else {
     await response.send("❓ Unknown command!");
+    await response.react("❓");
   }
 }

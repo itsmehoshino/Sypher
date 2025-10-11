@@ -31,7 +31,7 @@
       "@sy-core": [".source/controls/*"],
       "@sy-listener": ["./source/controls/listener/listener.ts"],
       "@sy-handler": ["./source/controls/listener/handler/*"],
-      "@sy-login": ["./source/controls/logger/facebook-login.ts"]
+      "@sy-login": ["./source/controls/logger/botlogger.ts"]
     }
   },
   "include": ["**/*.js", "**/*.ts"],
