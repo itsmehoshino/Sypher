@@ -31,7 +31,8 @@
       "@sy-core": [".source/controls/*"],
       "@sy-listener": ["./source/controls/listener/listener.ts"],
       "@sy-handler": ["./source/controls/listener/handler/*"],
-      "@sy-login": ["./source/controls/logger/botlogger.ts"]
+      "@sy-login": ["./source/controls/logger/botlogger.ts"],
+      "@sy-database": ["./sypher/resources/database/database.ts"]
     }
   },
   "include": ["**/*.js", "**/*.ts"],
