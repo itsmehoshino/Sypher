@@ -27,10 +27,4 @@ initializeMongo().catch((error) => {
   process.exit(1);
 });
 
-process.on('SIGINT', async () => {
-  await cassMongo.close?.();
-  console.log('MongoDB connection closed');
-  process.exit(0);
-});
-
 export { cassMongo, manager };
