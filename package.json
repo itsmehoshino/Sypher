@@ -1,7 +1,7 @@
 {
   "dependencies": {
     "@anbuinfosec/fca-unofficial": "^2.0.0",
-    "@dongdev/fca-unofficial": "^2.0.26",
+    "@dongdev/fca-unofficial": "^2.0.30",
     "axios": "^1.11.0",
     "chalk": "^4.1.2",
     "dotenv": "^17.2.1",
@@ -10,6 +10,7 @@
     "fs": "^0.0.1-security",
     "fs-extra": "^11.3.1",
     "gradient-string": "^2.0.2",
+    "lia-mongo": "^1.2.1",
     "mongoose": "^8.19.1",
     "nodejs": "^0.0.0",
     "os": "^0.1.2",

@@ -1,5 +1,4 @@
 import Response from "./chat/response";
-import { cassMongo } from "@sy-database";
 
 export default async function commandHandler({ api, event }) {
   const parts = event.body.split(" ").filter(Boolean);
@@ -47,7 +46,7 @@ export default async function commandHandler({ api, event }) {
 
   if (command && command.onCall) {
     try {
-      await command.onCall({ api, event, args, response, database: cassMongo });
+      await command.onCall({ api, event, args, response });
     } catch (error) {
       console.error(`Error executing command '${commandName}':`, error);
       await response.send("⚠️ An error occurred while executing that command.");

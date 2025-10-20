@@ -32,7 +32,7 @@
       "@sy-listener": ["./source/controls/listener/listener.ts"],
       "@sy-handler": ["./source/controls/listener/handler/*"],
       "@sy-login": ["./source/controls/logger/botlogger.ts"],
-      "@sy-database": ["./sypher/resources/database/database.ts"]
+      "@sy-database": ["./sypher/resources/database/main/database.js"]
     }
   },
   "include": ["**/*.js", "**/*.ts"],
