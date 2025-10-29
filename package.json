@@ -2,6 +2,7 @@
   "dependencies": {
     "@anbuinfosec/fca-unofficial": "^2.0.0",
     "@dongdev/fca-unofficial": "^2.0.31",
+    "ws3-fca": "github:NethWs3Dev/ws3-fca",
     "axios": "^1.11.0",
     "chalk": "^4.1.2",
     "dotenv": "^17.2.1",
@@ -17,6 +18,7 @@
     "path": "^0.12.7",
     "ts-node": "^10.9.2",
     "tsconfig-paths": "^4.2.0",
-    "util": "^0.12.5"
+    "util": "^0.12.5",
+    "fca-delta": "^3.8.21"
   }
 }

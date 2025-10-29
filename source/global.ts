@@ -21,13 +21,13 @@ declare global {
       author: string;
       aliases: string[];
       description: string;
-      onCall: (params: { api: API; event: Event; args: string[]; response: Response; fonts: Fonts })
+      onCall: (params: { api: API; event: Event; args: string[]; response: Response; fonts: Fonts }) => Promise<void>
     }
 
     interface EventCMD {
       name: string;
       description: string;
-      onEvent: (params: { api: API; event: Event })
+      onEvent: (params: { api: API; event: Event }) => Promise<void>
     }
 
     interface Event {
@@ -44,6 +44,11 @@ declare global {
       mono: (text: string) => string;
       italic: (text: string) => string;
       outline: (text: string) => string;
+    }
+
+    interface Response {
+      send: (message: string) => Promise<void>;
+      react: (emoji: string) => Promise<void>;
     }
 
     interface SypherUtils {

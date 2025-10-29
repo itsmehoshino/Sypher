@@ -2,7 +2,7 @@ import { readdirSync } from "fs-extra";
 import { resolve, join } from "path";
 import { log } from "@sy-log";
 
-const utils = {
+const utils: SypherAI.SypherUtils = {
   async loadCommands() {
     const filePath = resolve(process.cwd(), "sypher/modules/commands");
     log("DEBUG", `Command file path: ${filePath}`);
