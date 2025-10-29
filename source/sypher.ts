@@ -2,6 +2,16 @@ import { starter } from "./controls/plugins/starter";
 import utils from "./controls/utils";
 import fs from "fs-extra";
 import path from "path";
+import EventEmitter from "events";
+import("./global");
+import { log } from "@sy-log";
+
+const bot = new EventEmitter();
+globalThis.bot = bot;
+globalThis.log = log;
+
+process.on("unhandledRejection", (error) => log("ERROR", error));
+process.on("uncaughtException", (error) => log("ERROR", error.stack));
 
 globalThis.Sypher = {
   get config() {
@@ -48,6 +58,7 @@ globalThis.Sypher = {
   events: new Map(),
   cooldowns: new Map(),
   replies: new Map(),
+  reactions: new Map(),
   utils: utils,
 };
 

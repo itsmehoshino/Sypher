@@ -1,4 +1,5 @@
 import Response from "./chat/response";
+import fonts from "@sy-styler/fonts";
 
 export default async function commandHandler({ api, event }) {
   const parts = event.body.split(" ").filter(Boolean);
@@ -46,13 +47,17 @@ export default async function commandHandler({ api, event }) {
 
   if (command && command.onCall) {
     try {
-      await command.onCall({ api, event, args, response });
+      await command.onCall({ api, event, args, response, fonts });
     } catch (error) {
       console.error(`Error executing command '${commandName}':`, error);
-      await response.send("⚠️ An error occurred while executing that command.");
+      if (error instanceof Error) {
+        await response.send(fonts.sans(`Failed to execute command '${commandName}'. If you are the developer, please fix your code. ${error.stack}`));
+      } else {
+        await response.send(fonts.sans(`Failed to execute command '${commandName}'. An unexpected error occurred.`));
+      }
     }
   } else {
-    await response.send("❓ Unknown command!");
+    await response.send(fonts.sans(`Command used doesn't ${fonts.bold("exist.")}`));
     await response.react("❓");
   }
 }

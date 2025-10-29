@@ -1,7 +1,7 @@
 {
   "dependencies": {
     "@anbuinfosec/fca-unofficial": "^2.0.0",
-    "@dongdev/fca-unofficial": "^2.0.30",
+    "@dongdev/fca-unofficial": "^2.0.31",
     "axios": "^1.11.0",
     "chalk": "^4.1.2",
     "dotenv": "^17.2.1",
