@@ -1,4 +1,4 @@
-import login from "fca-delta";
+import login from "@dongdev/fca-unofficial";
 import { readFileSync } from "fs-extra";
 import { log } from "@sy-log";
 import listener from "@sy-listener";

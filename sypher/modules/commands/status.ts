@@ -1,15 +1,19 @@
 import os from "os";
+import { version as nodeVersion } from "process";
 
 const command: SypherAI.Command = {
   name: "uptime",
   usage: "uptime",
   author: "Francis Loyd Raval",
-  aliases: ["status", "stats", "botinfo"],
-  description: "Shows real-time bot uptime and system information",
+  aliases: ["status", "stats", "botinfo", "info"],
+  description: "Displays comprehensive real-time bot and server information",
 
   async onCall({ response, fonts }) {
+    const start = Date.now();
+
     const uptimeSeconds = process.uptime();
     const uptime = formatUptime(uptimeSeconds);
+    const startedAt = new Date(Date.now() - uptimeSeconds * 1000).toLocaleString();
 
     const totalMem = os.totalmem();
     const freeMem = os.freemem();
@@ -19,19 +23,46 @@ const command: SypherAI.Command = {
     const rss = formatBytes(processMem.rss);
     const heapUsed = formatBytes(processMem.heapUsed);
     const heapTotal = formatBytes(processMem.heapTotal);
+    const external = formatBytes(processMem.external);
+    const arrayBuffers = formatBytes(processMem.arrayBuffers);
 
     const platform = `${os.platform()} ${os.arch()} (${os.release()})`;
-    const cpu = `${os.cpus()[0].model.trim()} (${os.cpus().length} cores)`;
-    const nodeVersion = process.version;
+    const cpuModel = os.cpus()[0].model.trim();
+    const cpuCores = os.cpus().length;
+    const cpuUsage = os.loadavg();
+    const nodeVer = nodeVersion;
     const pid = process.pid;
+    const uptimeSys = formatUptime(os.uptime());
+
+    const serverTime = new Date().toLocaleString("en-US", {
+      timeZoneName: "short",
+      weekday: "short",
+      year: "numeric",
+      month: "short",
+      day: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+      second: "2-digit",
+    });
+
+    const ping = Date.now() - start;
+
+    const botUptime = formatUptime(process.uptime());
+    const systemUptime = formatUptime(os.uptime());
 
     const info = [
-      `${fonts.bold("Bot Uptime")}: ${uptime}`,
+      `${fonts.bold("Bot Status")}`,
+      `• Uptime: ${botUptime}`,
+      `• Started: ${startedAt}`,
+      `• Ping: ${ping}ms`,
+      `• Server Time: ${serverTime}`,
       "",
       `${fonts.bold("System")}`,
       `• Platform: ${platform}`,
-      `• CPU: ${cpu}`,
-      `• Node.js: ${nodeVersion}`,
+      `• CPU: ${cpuModel} (${cpuCores} cores)`,
+      `• Load Avg (1/5/15): ${cpuUsage[0].toFixed(2)}, ${cpuUsage[1].toFixed(2)}, ${cpuUsage[2].toFixed(2)}`,
+      `• System Uptime: ${systemUptime}`,
+      `• Node.js: ${nodeVer}`,
       `• PID: ${pid}`,
       "",
       `${fonts.bold("Memory (RAM)")}`,
@@ -41,8 +72,15 @@ const command: SypherAI.Command = {
       "",
       `${fonts.bold("Process Memory")}`,
       `• RSS: ${rss}`,
-      `• Heap Used: ${heapUsed}`,
-      `• Heap Total: ${heapTotal}`,
+      `• Heap Used: ${heapUsed} / ${heapTotal}`,
+      `• External: ${external}`,
+      `• Array Buffers: ${arrayBuffers}`,
+      "",
+      `${fonts.bold("Environment")}`,
+      `• Hostname: ${os.hostname()}`,
+      `• User: ${os.userInfo().username}`,
+      `• Home Dir: ${os.homedir()}`,
+      `• Temp Dir: ${os.tmpdir()}`,
     ].join("\n");
 
     return await response.send(info.trim());
@@ -64,9 +102,7 @@ function formatUptime(seconds: number): string {
   if (days > 0) parts.push(`${days} day${days > 1 ? "s" : ""}`);
   if (hours > 0) parts.push(`${hours} hour${hours > 1 ? "s" : ""}`);
   if (minutes > 0) parts.push(`${minutes} minute${minutes > 1 ? "s" : ""}`);
-  if (seconds > 0 || parts.length === 0) {
-    parts.push(`${seconds} second${seconds !== 1 ? "s" : ""}`);
-  }
+  if (seconds > 0 || parts.length === 0) parts.push(`${seconds} second${seconds !== 1 ? "s" : ""}`);
 
   if (parts.length > 1) {
     const last = parts.pop()!;
@@ -79,7 +115,7 @@ function formatUptime(seconds: number): string {
 function formatBytes(bytes: number): string {
   if (bytes === 0) return "0 B";
   const k = 1024;
-  const sizes = ["B", "KB", "MB", "GB", "TB"];
+  const sizes = ["B", "KB", "MB", "GB", "TB", "PB"];
   const i = Math.floor(Math.log(bytes) / Math.log(k));
   return `${(bytes / Math.pow(k, i)).toFixed(2)} ${sizes[i]}`;
 }
