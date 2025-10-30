@@ -104,7 +104,9 @@ const command: SypherAI.Command = {
     const query = args.join(" ").toLowerCase().trim();
 
     if (query === "list") {
-      const list = timezones.map((z, i) => `${(i+1).toString().padStart(3)}. ${z.name}`).join("\n");
+      const list = timezones
+        .map((z, i) => `${String(i + 1).padStart(3)}. ${z.name}`)
+        .join("\n");
       return await response.send(`${fonts.bold("All ${timezones.length} Time Zones")}\n${list}`);
     }
 
