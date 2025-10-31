@@ -33,7 +33,8 @@
       "@sy-handler": ["./source/controls/listener/handler/*"],
       "@sy-login": ["./source/controls/logger/botlogger.ts"],
       "@sy-database/*": ["./sypher/resources/database/*"],
-      "@sy-styler/*": ["./sypher/resources/styles/*"]
+      "@sy-styler/*": ["./sypher/resources/styles/*"],
+      "@sy-patches/*": ["./source/controls/patches/*"]
     }
   },
   "include": ["**/*.js", "**/*.ts"],

@@ -10,13 +10,13 @@ const command: SypherAI.Command = {
   async onCall({ response, args, fonts }) {
     if (args.length === 0) {
       return await response.send(
-        `${fonts.bold("Usage")}: ${this.usage}\n${fonts.bold("Examples")}:\n` +
-        `• calc 2 + 3\n` +
-        `• calc 2(3 + 1)\n` +
-        `• calc 2^3\n` +
-        `• calc sqrt(16)\n` +
-        `• calc 5 * (2 + 3)\n` +
-        `• calc sin(π/2)`
+        `**Usage**: ${this.usage}\n**Examples**:\n` +
+        `• **calc** 2 + 3\n` +
+        `• **calc** 2(3 + 1)\n` +
+        `• **calc** 2^3\n` +
+        `• **calc** sqrt(16)\n` +
+        `• **calc** 5 * (2 + 3)\n` +
+        `• **calc** sin(π/2)`
       );
     }
 
@@ -30,8 +30,8 @@ const command: SypherAI.Command = {
     }
 
     const output = [
-      `${fonts.bold("Input")}: \`${expression}\``,
-      `${fonts.bold("Result")}: **${result}**`,
+      `**Input"**: \`${expression}\``,
+      `**Result**: **${result}**`,
     ].join("\n");
 
     return await response.send(output);

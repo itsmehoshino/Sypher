@@ -4,7 +4,7 @@ const command: SypherAI.Command = {
   author: "Francis Loyd Raval",
   aliases: ["h", "?", "menu"],
   description: "Displays a list of available commands",
-  async onCall({ response, args, fonts }) {
+  async onCall({ response, args }) {
     if (args.length > 0 && isNaN(Number(args[0]))) {
       const commandName = args[0].toLowerCase();
       const command = globalThis.Sypher.commands.get(commandName);
@@ -61,9 +61,9 @@ const command: SypherAI.Command = {
 
     const commandList = paginatedCommands
       .map(([name, cmd], index) => {
-        return `${fonts.bold(`${startIndex + index + 1}.`)} ${name}\n  ${fonts.bold("Description")}: ${
+        return `**${startIndex + index + 1}.** **${name}**\n  **Description**: ${
           cmd.description || "No description available"
-        }\n  ${fonts.bold("Usage")}: ${cmd.usage || name}`;
+        }\n  **Usage**: ${cmd.usage || name}`;
       })
       .join("\n\n");
 

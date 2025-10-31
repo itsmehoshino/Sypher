@@ -7,8 +7,8 @@
     "selfListen": false
   },
   "prefix": "/",
-  "subprefix": [".", "!"],
-  "maintenance": true,
+  "subprefix": [".", "*"],
+  "maintenance": false,
   "blacklist": [
     "", 
     ""

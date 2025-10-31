@@ -57,7 +57,7 @@ export default async function commandHandler({ api, event }) {
       }
     }
   } else {
-    await response.send(fonts.sans(`Command used doesn't ${fonts.bold("exist.")}`));
+    await response.send(`Command used doesn't **exist**.`);
     await response.react("❓");
   }
 }

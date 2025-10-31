@@ -79,25 +79,28 @@ const command: SypherAI.Command = {
       const sample = timezones.slice(0, 10);
       const times = sample.map(({ name, tz }) => {
         const date = new Date(now.toLocaleString("en-US", { timeZone: tz }));
-        const timeStr = date.toLocaleTimeString("en-US", { 
-          timeZone: tz, 
-          hour: "2-digit", 
-          minute: "2-digit", 
-          hour12: false 
+        const timeStr = date.toLocaleTimeString("en-US", {
+          timeZone: tz,
+          hour: "2-digit",
+          minute: "2-digit",
+          hour12: false,
         });
-        const offset = Intl.DateTimeFormat("en-US", { 
-          timeZone: tz, 
-          timeZoneName: "shortOffset" 
-        }).formatToParts(now).find(p => p.type === "timeZoneName")?.value || "";
-        return `${fonts.bold(name)}: ${timeStr} ${offset}`;
+        const offset = Intl.DateTimeFormat("en-US", {
+          timeZone: tz,
+          timeZoneName: "shortOffset",
+        })
+          .formatToParts(now)
+          .find(p => p.type === "timeZoneName")?.value || "";
+        return `**${name}**: ${timeStr} ${offset}`;
       }).join("\n");
 
       return await response.send(
-        `${fonts.bold("World Clock")} (showing 10 of ${timezones.length} zones)\n` +
-        times + "\n\n" +
-        `Use \`${this.usage} <country/city>\` to search.\n` +
-        `Example: \`worldclock japan\`, \`worldclock new york\`\n` +
-        `Use \`worldclock list\` to see all.`
+        `World Clock (showing **10** of **${timezones.length}** zones\n` +
+          times +
+          "\n\n" +
+          `Use \`${this.usage} **[ country/city ]**\` to search.\n` +
+          `**Example**: \`worldclock japan\`, \`worldclock new york\`\n` +
+          `Use \`**worldclock list**\` to see all.`
       );
     }
 
@@ -105,24 +108,27 @@ const command: SypherAI.Command = {
 
     if (query === "list") {
       const list = timezones
-        .map((z, i) => `${String(i + 1).padStart(3)}. ${z.name}`)
+        .map((z, i) => `${String(i + 1).padStart(3, " ")}. ${z.name}`)
         .join("\n");
-      return await response.send(`${fonts.bold("All ${timezones.length} Time Zones")}\n${list}`);
+      return await response.send(`All **${timezones.length}** Time Zones\n${list}`);
     }
 
-    const matches = timezones.filter(z => 
-      z.name.toLowerCase().includes(query) || 
-      z.tz.toLowerCase().includes(query)
+    const matches = timezones.filter(
+      z =>
+        z.name.toLowerCase().includes(query) ||
+        z.tz.toLowerCase().includes(query)
     );
 
     if (matches.length === 0) {
-      return await response.send(`No time zone found for "${query}". Use \`worldclock list\` to browse.`);
+      return await response.send(
+        `No time zone found for "**${query}**". Use \`**worldclock list**\` to browse.`
+      );
     }
 
     const now = new Date();
     const results = matches.map(({ name, tz }) => {
       const date = new Date(now.toLocaleString("en-US", { timeZone: tz }));
-      const full = date.toLocaleString("en-US", { 
+      const full = date.toLocaleString("en-US", {
         timeZone: tz,
         weekday: "short",
         year: "numeric",
@@ -132,14 +138,15 @@ const command: SypherAI.Command = {
         minute: "2-digit",
         second: "2-digit",
         hour12: false,
-        timeZoneName: "short"
+        timeZoneName: "short",
       });
-      return `${fonts.bold(name)} (${tz})\n${full}`;
+      return `**${name}** (${tz})\n${full}`;
     }).join("\n\n");
 
-    const header = matches.length === 1 
-      ? `${fonts.bold("Time in")} ${matches[0].name}`
-      : `${fonts.bold(matches.length} matching time zones found)`;
+    const header =
+      matches.length === 1
+        ? `Time in **${matches[0].name}**`
+        : `**${matches.length}** matching time zones found`;
 
     return await response.send(`${header}\n\n${results}`);
   },
