@@ -3,9 +3,10 @@ const command: SypherAI.Command = {
   usage: "worldclock [search term]",
   author: "Francis Loyd Raval",
   aliases: ["time", "clock", "tz"],
+  cooldowns: 5,
   description: "Shows current time in any country or city. Supports 400+ IANA time zones.",
 
-  async onCall({ response, args, fonts }) {
+  async onCall({ response, args }) {
     const timezones = [
       { name: "UTC", tz: "Etc/UTC" },
       { name: "Afghanistan", tz: "Asia/Kabul" },

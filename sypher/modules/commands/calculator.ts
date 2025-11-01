@@ -5,9 +5,10 @@ const command: SypherAI.Command = {
   usage: "calc <expression>",
   author: "Francis Loyd Raval",
   aliases: ["calculate", "math", "c"],
+  cooldowns: 5,
   description: "Powerful math calculator using mathjs",
 
-  async onCall({ response, args, fonts }) {
+  async onCall({ response, args }) {
     if (args.length === 0) {
       return await response.send(
         `**Usage**: ${this.usage}\n**Examples**:\n` +

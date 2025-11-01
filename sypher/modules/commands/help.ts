@@ -3,6 +3,7 @@ const command: SypherAI.Command = {
   usage: "help [command | page number]",
   author: "Francis Loyd Raval",
   aliases: ["h", "?", "menu"],
+  cooldowns: 5,
   description: "Displays a list of available commands",
   async onCall({ response, args }) {
     if (args.length > 0 && isNaN(Number(args[0]))) {

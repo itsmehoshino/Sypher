@@ -32,6 +32,22 @@ export default async function commandHandler({ api, event }) {
   const response = new Response(api, event);
   const command = globalThis.Sypher.commands.get(commandName);
 
+  if (command && typeof command.cooldowns === "number" && command.cooldowns > 0) {
+    const cooldownKey = `${event.senderID}_${commandName}`;
+    const now = Date.now();
+    const lastUsed = globalThis.Sypher.cooldowns.get(cooldownKey) || 0;
+    const cooldownMs = command.cooldowns * 1000;
+
+    if (now - lastUsed < cooldownMs) {
+      const remaining = Math.ceil((cooldownMs - (now - lastUsed)) / 1000);
+      await response.send(`⏳ Please wait **${remaining}s** before using this command again.`);
+      await response.react("⏳");
+      return;
+    }
+
+    globalThis.Sypher.cooldowns.set(cooldownKey, now);
+  }
+  
   if (config.maintenance) {
     const allowedUsers = [
       ...config.developers,
@@ -39,8 +55,8 @@ export default async function commandHandler({ api, event }) {
       ...config.moderators,
     ];
     if (!allowedUsers.includes(event.senderID)) {
-      await response.send("🚧 The bot is currently under maintenance. Please try again later.");
-      await response.react("🚧");
+      await response.send("The bot is currently under maintenance. Please try again later.");
+      await response.react("👩‍🔧");
       return;
     }
   }
@@ -51,9 +67,9 @@ export default async function commandHandler({ api, event }) {
     } catch (error) {
       console.error(`Error executing command '${commandName}':`, error);
       if (error instanceof Error) {
-        await response.send(fonts.sans(`Failed to execute command '${commandName}'. If you are the developer, please fix your code. ${error.stack}`));
+        await response.send(`Failed to execute command '${commandName}'. If you are the developer, please fix your code. \n\n${error.stack}`);
       } else {
-        await response.send(fonts.sans(`Failed to execute command '${commandName}'. An unexpected error occurred.`));
+        await response.send(`Failed to execute command '${commandName}'. An unexpected error occurred.`);
       }
     }
   } else {

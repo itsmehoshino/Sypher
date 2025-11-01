@@ -3,6 +3,7 @@ const command: SypherAI.Command = {
   usage: "roast",
   author: "Francis Loyd Raval",
   aliases: ["burn", "insult"],
+  cooldowns: 5,
   description: "Delivers a random ultimate savage roast",
 
   async onCall({ response }) {

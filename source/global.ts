@@ -20,6 +20,7 @@ declare global {
       usage: string;
       author: string;
       aliases: string[];
+      cooldowns: number;
       description: string;
       onCall: (params: { api: API; event: Event; args: string[]; response: Response; fonts: Fonts }) => Promise<void>
     }
@@ -35,7 +36,8 @@ declare global {
       threadID: string;
       messageID: string;
       senderID: string;
-      body: string
+      body: string;
+      mentions: string[];
     }
 
     interface Fonts {

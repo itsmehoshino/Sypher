@@ -6,6 +6,7 @@ const command: SypherAI.Command = {
   usage: "uptime",
   author: "Francis Loyd Raval",
   aliases: ["status", "stats", "botinfo", "info"],
+  cooldowns: 5,
   description: "Displays comprehensive real-time bot and server information",
 
   async onCall({ response, fonts }) {
