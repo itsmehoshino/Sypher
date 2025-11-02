@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Sypher Engine</title>
+  <style>
+    :root {
+      --bg: #0f0f1a;
+      --accent: #00ff88;
+      --text: #e0e0e0;
+      --card: #1a1a2e;
+    }
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #0f0f1a, #16213e);
+      color: var(--text);
+      height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+    }
+    .container {
+      background: var(--card);
+      padding: 2.5rem;
+      border-radius: 16px;
+      box-shadow: 0 10px 30px rgba(0, 255, 136, 0.2);
+      max-width: 500px;
+      width: 90%;
+      border: 1px solid rgba(0, 255, 136, 0.3);
+    }
+    h1 {
+      margin: 0 0 1rem;
+      font-size: 2.5rem;
+      color: var(--accent);
+      text-shadow: 0 0 10px rgba(0, 255, 136, 0.5);
+    }
+    p {
+      margin: 0.5rem 0;
+      font-size: 1.1rem;
+      opacity: 0.9;
+    }
+    .status {
+      margin-top: 1.5rem;
+      padding: 0.8rem 1.5rem;
+      background: rgba(0, 255, 136, 0.15);
+      border-radius: 8px;
+      font-weight: bold;
+      color: var(--accent);
+      border: 1px solid var(--accent);
+    }
+    .pulse {
+      display: inline-block;
+      width: 10px;
+      height: 10px;
+      background: var(--accent);
+      border-radius: 50%;
+      margin-right: 8px;
+      animation: pulse 1.5s infinite;
+    }
+    @keyframes pulse {
+      0% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.5; transform: scale(1.3); }
+      100% { opacity: 1; transform: scale(1); }
+    }
+    footer {
+      margin-top: 2rem;
+      font-size: 0.9rem;
+      opacity: 0.7;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>SYPHER</h1>
+    <p>Advanced Automation Engine</p>
+    <div class="status">
+      <span class="pulse"></span>
+      <span>ONLINE & OPERATIONAL</span>
+    </div>
+    <p>Port: <strong>3000</strong> | Status: <strong>Active</strong></p>
+    <footer>Operator Console • Secure Node Active</footer>
+  </div>
+</body>
+</html>
