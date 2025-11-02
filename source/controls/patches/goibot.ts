@@ -1,4 +1,4 @@
-import Response from "@sy-handlers/chat/response";
+import Response from "@sy-handler/chat/response";
 
 const replies = [
   { text: "Dedede ka?", react: "⁉️" },
@@ -23,5 +23,6 @@ export default async function handleGoibot({ api, event }: { api: any; event: an
 
   return true;
 }
+
 
 
