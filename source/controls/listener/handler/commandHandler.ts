@@ -1,6 +1,10 @@
 import Response from "./chat/response";
+import handleGoibot from "@sy-patches/goibot";
 
 export default async function commandHandler({ api, event }) {
+  const handled = await handleGoibot({ api, event });
+  if (handled) return;
+
   const parts = event.body.split(" ").filter(Boolean);
   let [commandName = "", ...args] = parts;
 
@@ -58,7 +62,7 @@ export default async function commandHandler({ api, event }) {
 
   if (!command) {
     await response.send(`Command using doesn't **exist.**`);
-    await response.react("❓");
+    await response.react("question");
     return;
   }
 
@@ -85,7 +89,7 @@ export default async function commandHandler({ api, event }) {
     }
 
     await response.send(message);
-    await response.react("🚫");
+    await response.react("no entry");
     return;
   }
 
@@ -98,7 +102,7 @@ export default async function commandHandler({ api, event }) {
     if (now - lastUsed < cooldownMs) {
       const remaining = Math.ceil((cooldownMs - (now - lastUsed)) / 1000);
       await response.send(`Please wait **${remaining}s** before using this command again.`);
-      await response.react("⏳");
+      await response.react("hourglass");
       return;
     }
 
@@ -113,7 +117,7 @@ export default async function commandHandler({ api, event }) {
     ];
     if (!allowedUsers.includes(event.senderID)) {
       await response.send("The bot is currently under maintenance. Please try again later.");
-      await response.react("🔧");
+      await response.react("wrench");
       return;
     }
   }
@@ -123,7 +127,7 @@ export default async function commandHandler({ api, event }) {
     response,
     args,
     event
-  }
+  };
 
   if (command && command.onCall) {
     try {
