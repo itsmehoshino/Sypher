@@ -13,16 +13,22 @@ const replies = [
 
 export default async function handleGoibot({ api, event }: { api: any; event: any }) {
   const message = event.body?.trim();
-  if (!message || message.toLowerCase() !== "bot") return false;
+  const lowerMessage = message?.toLowerCase();
 
   const response = new Response(api, event);
-  const { text, react } = replies[Math.floor(Math.random() * replies.length)];
 
-  await response.send(text);
-  await response.react(react);
+  if (lowerMessage === "bot") {
+    const { text, react } = replies[Math.floor(Math.random() * replies.length)];
+    await response.send(text);
+    await response.react(react);
+    return true;
+  }
 
-  return true;
+  if (message === "👍") {
+    await response.send("Aray mo!!, Ni-like zone ni **crush**.");
+    await response.react("😢");
+    return true;
+  }
+
+  return false;
 }
-
-
-
