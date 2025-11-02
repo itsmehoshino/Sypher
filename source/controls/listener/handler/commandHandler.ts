@@ -62,7 +62,7 @@ export default async function commandHandler({ api, event }) {
 
   if (!command) {
     await response.send(`Command using doesn't **exist.**`);
-    await response.react("question");
+    await response.react("❓");
     return;
   }
 
@@ -89,7 +89,7 @@ export default async function commandHandler({ api, event }) {
     }
 
     await response.send(message);
-    await response.react("no entry");
+    await response.react("🚫");
     return;
   }
 
@@ -102,7 +102,7 @@ export default async function commandHandler({ api, event }) {
     if (now - lastUsed < cooldownMs) {
       const remaining = Math.ceil((cooldownMs - (now - lastUsed)) / 1000);
       await response.send(`Please wait **${remaining}s** before using this command again.`);
-      await response.react("hourglass");
+      await response.react("⏳");
       return;
     }
 
@@ -117,7 +117,7 @@ export default async function commandHandler({ api, event }) {
     ];
     if (!allowedUsers.includes(event.senderID)) {
       await response.send("The bot is currently under maintenance. Please try again later.");
-      await response.react("wrench");
+      await response.react("🔧");
       return;
     }
   }
