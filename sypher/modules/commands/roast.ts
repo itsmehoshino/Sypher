@@ -2,6 +2,7 @@ import roasts from "@sy-patches/roast";
 
 const command: SypherAI.Command = {
   name: "roast",
+  role: 0,
   usage: "roast",
   author: "Francis Loyd Raval",
   aliases: ["burn", "insult"],
@@ -10,7 +11,7 @@ const command: SypherAI.Command = {
 
   async onCall({ response }) {
     const roast = roasts[Math.floor(Math.random() * roasts.length)];
-    return await response.send(roast);
+    await response.send(roast);
   },
 };
 

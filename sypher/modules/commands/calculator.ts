@@ -2,6 +2,7 @@ import { evaluate } from "mathjs";
 
 const command: SypherAI.Command = {
   name: "calc",
+  role: 0,
   usage: "calc <expression>",
   author: "Francis Loyd Raval",
   aliases: ["calculate", "math", "c"],
@@ -10,32 +11,39 @@ const command: SypherAI.Command = {
 
   async onCall({ response, args }) {
     if (args.length === 0) {
-      return await response.send(
+      await response.send(
         `**Usage**: ${this.usage}\n**Examples**:\n` +
-        `• **calc** 2 + 3\n` +
-        `• **calc** 2(3 + 1)\n` +
-        `• **calc** 2^3\n` +
-        `• **calc** sqrt(16)\n` +
-        `• **calc** 5 * (2 + 3)\n` +
-        `• **calc** sin(π/2)`
+          `• **calc** 2 + 3\n` +
+          `• **calc** 2(3 + 1)\n` +
+          `• **calc** 2^3\n` +
+          `• **calc** sqrt(16)\n` +
+          `• **calc** sin(pi/4)\n` +
+          `• **calc** 5 km to meters`
       );
+      return;
     }
 
     const expression = args.join(" ");
 
-    let result;
-    try {
-      result = evaluate(expression);
-    } catch (error: any) {
-      return await response.send(`Invalid expression: \`${expression}\``);
+    if (expression.length > 200) {
+      await response.send("Error: Expression too long. Max 200 characters.");
+      return;
     }
 
-    const output = [
-      `**Input"**: \`${expression}\``,
-      `**Result**: **${result}**`,
-    ].join("\n");
+    let result: any;
+    try {
+      result = evaluate(expression);
+    } catch {
+      await response.send(`Error: Invalid expression: \`${expression}\``);
+      return;
+    }
 
-    return await response.send(output);
+    const formatted =
+      typeof result === "number" ? result.toLocaleString() : String(result);
+
+    await response.send(
+      `**Input**: \`${expression}\`\n**Result**: **${formatted}**`
+    );
   },
 };
 

@@ -1,82 +1,83 @@
 const command: SypherAI.Command = {
   name: "help",
+  role: 0,
   usage: "help [command | page number]",
   author: "Francis Loyd Raval",
   aliases: ["h", "?", "menu"],
   cooldowns: 5,
   description: "Displays a list of available commands",
-  async onCall({ response, args }) {
-    if (args.length > 0 && isNaN(Number(args[0]))) {
-      const commandName = args[0].toLowerCase();
-      const command = globalThis.Sypher.commands.get(commandName);
 
-      if (!command) {
-        return await response.send(
-          `No command found with the name "${commandName}". Use "help" to see all commands.`
+  async onCall({ response, args }) {
+    const commands = globalThis.Sypher.commands;
+
+    if (args.length > 0 && isNaN(Number(args[0]))) {
+      const cmdName = args[0].toLowerCase();
+      const cmd = commands.get(cmdName);
+
+      if (!cmd) {
+        await response.send(
+          `No command found: \`${cmdName}\`. Use \`help\` to see all commands.`
         );
+        return;
       }
 
-      const { name, description, usage, aliases } = command;
+      const aliasText = cmd.aliases?.length
+        ? `**Aliases**: ${cmd.aliases.join(", ")}`
+        : "";
+
       const helpText = [
-        `**Command**: ${name}`,
-        `**Description**: ${description || "No description available"}`,
-        `**Usage**: ${usage || name}`,
-        aliases && aliases.length > 0
-          ? `**Aliases**: ${aliases.join(", ")}`
-          : null,
+        `**Command**: ${cmd.name}`,
+        `**Description**: ${cmd.description || "No description"}`,
+        `**Usage**: ${cmd.usage || cmd.name}`,
+        aliasText,
       ]
-        .filter((item) => item !== null)
+        .filter(Boolean)
         .join("\n");
 
-      return await response.send(helpText);
+      await response.send(helpText);
+      return;
     }
 
-    const uniqueCommands = new Map();
-    for (const [_, cmd] of globalThis.Sypher.commands) {
-      if (!uniqueCommands.has(cmd.name)) {
-        uniqueCommands.set(cmd.name, cmd);
-      }
+    const unique = new Map<string, SypherAI.Command>();
+    for (const cmd of commands.values()) {
+      if (!unique.has(cmd.name)) unique.set(cmd.name, cmd);
     }
 
-    const sortedCommands = Array.from(uniqueCommands.entries()).sort((a, b) =>
-      a[0].localeCompare(b[0])
+    const sorted = Array.from(unique.entries()).sort(([a], [b]) =>
+      a.localeCompare(b)
     );
 
-    const commandsPerPage = 10;
-    const totalCommands = sortedCommands.length;
-    const totalPages = Math.ceil(totalCommands / commandsPerPage);
+    const perPage = 10;
+    const total = sorted.length;
+    const pages = Math.ceil(total / perPage);
     let page = 1;
 
     if (args.length > 0 && !isNaN(Number(args[0]))) {
-      page = parseInt(String(args[0]), 10);
-      if (page < 1 || page > totalPages) {
-        return await response.send(
-          `Invalid page number. Please use a number between 1 and ${totalPages}.`
+      page = Math.max(1, Math.min(pages, parseInt(args[0], 10)));
+      if (page < 1 || page > pages) {
+        await response.send(
+          `Invalid page. Use 1–${pages}.`
         );
+        return;
       }
     }
 
-    const startIndex = (page - 1) * commandsPerPage;
-    const endIndex = startIndex + commandsPerPage;
-    const paginatedCommands = sortedCommands.slice(startIndex, endIndex);
+    const start = (page - 1) * perPage;
+    const end = start + perPage;
+    const pageCommands = sorted.slice(start, end);
 
-    const commandList = paginatedCommands
-      .map(([name, cmd], index) => {
-        return `**${startIndex + index + 1}.** **${name}**\n  **Description**: ${
-          cmd.description || "No description available"
-        }\n  **Usage**: ${cmd.usage || name}`;
-      })
+    const list = pageCommands
+      .map(
+        ([name, cmd], i) =>
+          `**${start + i + 1}.** **${name}**\n  ${cmd.description || "No description"}\n  \`${cmd.usage || name}\``
+      )
       .join("\n\n");
 
-    const helpText = [
-      totalCommands > 0
-        ? `${commandList}\n\n**Page ${page} of ${totalPages}** (${totalCommands} commands total)`
-        : "No commands loaded yet.",
-    ]
-      .filter((item) => item !== null)
-      .join("\n");
+    const footer = total > 0
+      ? `\n\n**Page ${page}/${pages}** • ${total} command${total === 1 ? "" : "s"}`
+      : "No commands available.";
 
-    return await response.send(helpText);
+    await response.send(total > 0 ? list + footer : footer);
   },
 };
 

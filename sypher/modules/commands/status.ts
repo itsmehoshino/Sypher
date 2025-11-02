@@ -2,18 +2,18 @@ import os from "os";
 import { version as nodeVersion } from "process";
 
 const command: SypherAI.Command = {
-  name: "uptime",
+  name: "status",
+  role: 0,
   usage: "uptime",
   author: "Francis Loyd Raval",
-  aliases: ["status", "stats", "botinfo", "info"],
+  aliases: ["uptime", "up", "stats", "botinfo", "info"],
   cooldowns: 5,
   description: "Displays comprehensive real-time bot and server information",
 
-  async onCall({ response, fonts }) {
+  async onCall({ response }) {
     const start = Date.now();
 
     const uptimeSeconds = process.uptime();
-    const uptime = formatUptime(uptimeSeconds);
     const startedAt = new Date(Date.now() - uptimeSeconds * 1000).toLocaleString();
 
     const totalMem = os.totalmem();
@@ -33,7 +33,6 @@ const command: SypherAI.Command = {
     const cpuUsage = os.loadavg();
     const nodeVer = nodeVersion;
     const pid = process.pid;
-    const uptimeSys = formatUptime(os.uptime());
 
     const serverTime = new Date().toLocaleString("en-US", {
       timeZoneName: "short",
@@ -47,18 +46,17 @@ const command: SypherAI.Command = {
     });
 
     const ping = Date.now() - start;
-
-    const botUptime = formatUptime(process.uptime());
+    const botUptime = formatUptime(uptimeSeconds);
     const systemUptime = formatUptime(os.uptime());
 
     const info = [
-      `**Bot Status**`,
+      "**Bot Status**",
       `• **Uptime**: ${botUptime}`,
       `• **Started**: ${startedAt}`,
       `• **Ping**: ${ping}ms`,
       `• **Server Time**: ${serverTime}`,
       "",
-      `**System**`,
+      "**System**",
       `• **Platform**: ${platform}`,
       `• **CPU**: ${cpuModel} (${cpuCores} cores)`,
       `• **Load Avg (1/5/15)**: ${cpuUsage[0].toFixed(2)}, ${cpuUsage[1].toFixed(2)}, ${cpuUsage[2].toFixed(2)}`,
@@ -66,25 +64,25 @@ const command: SypherAI.Command = {
       `• **Node.js**: ${nodeVer}`,
       `• **PID**: ${pid}`,
       "",
-      `**Memory (RAM)**`,
+      "**Memory (RAM)**",
       `• **Total**: ${formatBytes(totalMem)}`,
       `• **Used**: ${formatBytes(usedMem)} (${((usedMem / totalMem) * 100).toFixed(1)}%)`,
       `• **Free**: ${formatBytes(freeMem)}`,
       "",
-      `**Process Memory**`,
+      "**Process Memory**",
       `• **RSS**: ${rss}`,
       `• **Heap Used**: ${heapUsed} / ${heapTotal}`,
       `• **External**: ${external}`,
       `• **Array Buffers**: ${arrayBuffers}`,
       "",
-      `**Environment**`,
+      "**Environment**",
       `• **Hostname**: ${os.hostname()}`,
       `• **User**: ${os.userInfo().username}`,
       `• **Home Dir**: ${os.homedir()}`,
       `• **Temp Dir**: ${os.tmpdir()}`,
     ].join("\n");
 
-    return await response.send(info.trim());
+    await response.send(info.trim());
   },
 };
 

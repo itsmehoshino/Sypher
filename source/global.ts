@@ -1,4 +1,5 @@
-import { API } from "ws3-fca";
+import { API, Message } from "biar-fca";
+import Response from "@sy-handler/chat/response";
 
 declare global {
   var bot: import('events').EventEmitter;
@@ -17,40 +18,26 @@ declare global {
 
     interface Command {
       name: string;
+      role: number;
       usage: string;
       author: string;
       aliases: string[];
       cooldowns: number;
       description: string;
-      onCall: (params: { api: API; event: Event; args: string[]; response: Response; fonts: Fonts }) => Promise<void>
+      onCall: (ctx: CommandContext) => Promise<void>
     }
 
     interface EventCMD {
       name: string;
       description: string;
-      onEvent: (params: { api: API; event: Event }) => Promise<void>
+      onEvent: (ctx: CommandContext) => Promise<void>
     }
 
-    interface Event {
-      type: string;
-      threadID: string;
-      messageID: string;
-      senderID: string;
-      body: string;
-      mentions: string[];
-    }
-
-    interface Fonts {
-      sans: (text: string) => string;
-      bold: (text: string) => string;
-      mono: (text: string) => string;
-      italic: (text: string) => string;
-      outline: (text: string) => string;
-    }
-
-    interface Response {
-      send: (message: string) => Promise<void>;
-      react: (emoji: string) => Promise<void>;
+    interface CommandContext {
+      api: API;
+      event: Omit<Message, "type"> & { type: "message" | "messageReply" };
+      args: string[];
+      response: Response;
     }
 
     interface SypherUtils {

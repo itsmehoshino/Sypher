@@ -1,5 +1,4 @@
 import Response from "./chat/response";
-import fonts from "@sy-styler/fonts";
 
 export default async function commandHandler({ api, event }) {
   const parts = event.body.split(" ").filter(Boolean);
@@ -31,8 +30,66 @@ export default async function commandHandler({ api, event }) {
 
   const response = new Response(api, event);
   const command = globalThis.Sypher.commands.get(commandName);
+  const userId = event.senderID;
+  const { developers, administrators, moderators } = config;
 
-  if (command && typeof command.cooldowns === "number" && command.cooldowns > 0) {
+  const isDev = developers.includes(userId);
+  const isAdmin = administrators.includes(userId);
+  const isMod = moderators.includes(userId);
+  const isStaff = isDev || isAdmin || isMod;
+
+  const getUserRoleName = () => {
+    if (isDev) return "Developer";
+    if (isAdmin) return "Admin";
+    if (isMod) return "Moderator";
+    return "User";
+  };
+
+  const userRoleName = getUserRoleName();
+
+  const checkRole = (requiredRole) => {
+    if (requiredRole === 0) return true;
+    if (requiredRole === 1) return isDev;
+    if (requiredRole === 2) return isAdmin;
+    if (requiredRole === 3) return isMod;
+    if (requiredRole === 4) return isStaff;
+    return false;
+  };
+
+  if (!command) {
+    await response.send(`Command **${commandName}** doesn't exist.`);
+    await response.react("❓");
+    return;
+  }
+
+  if (command.role !== undefined && !checkRole(command.role)) {
+    const roleNames = {
+      0: "Everyone",
+      1: "Developer",
+      2: "Admin",
+      3: "Moderator",
+      4: "Staff"
+    };
+    const requiredName = roleNames[command.role] || "Restricted";
+
+    let message = `You don't have permission to use this command.\nRequired: **${requiredName}**`;
+
+    if (command.role === 1 && !isDev) {
+      message = `This command is **Developer-only**.\nYour rank: **${userRoleName}** — you need **Developer access**.`;
+    } else if (command.role === 2 && !isAdmin) {
+      message = `This command is for **Admins only**.\nYour rank: **${userRoleName}** — you need a **higher role**.`;
+    } else if (command.role === 3 && !isMod) {
+      message = `This command is for **Moderators only**.\nYour rank: **${userRoleName}** — you need a **higher role**.`;
+    } else if (command.role === 4 && !isStaff) {
+      message = `This command is for **Staff only**.\nYour rank: **${userRoleName}** — you need to be a **staff member**.`;
+    }
+
+    await response.send(message);
+    await response.react("🚫");
+    return;
+  }
+
+  if (typeof command.cooldowns === "number" && command.cooldowns > 0) {
     const cooldownKey = `${event.senderID}_${commandName}`;
     const now = Date.now();
     const lastUsed = globalThis.Sypher.cooldowns.get(cooldownKey) || 0;
@@ -40,14 +97,14 @@ export default async function commandHandler({ api, event }) {
 
     if (now - lastUsed < cooldownMs) {
       const remaining = Math.ceil((cooldownMs - (now - lastUsed)) / 1000);
-      await response.send(`⏳ Please wait **${remaining}s** before using this command again.`);
+      await response.send(`Please wait **${remaining}s** before using this command again.`);
       await response.react("⏳");
       return;
     }
 
     globalThis.Sypher.cooldowns.set(cooldownKey, now);
   }
-  
+
   if (config.maintenance) {
     const allowedUsers = [
       ...config.developers,
@@ -56,24 +113,28 @@ export default async function commandHandler({ api, event }) {
     ];
     if (!allowedUsers.includes(event.senderID)) {
       await response.send("The bot is currently under maintenance. Please try again later.");
-      await response.react("👩‍🔧");
+      await response.react("🔧");
       return;
     }
   }
 
+  const context: SypherAI.CommandContext = {
+    api,
+    response,
+    args,
+    event
+  }
+
   if (command && command.onCall) {
     try {
-      await command.onCall({ api, event, args, response, fonts });
+      await command.onCall(context);
     } catch (error) {
       console.error(`Error executing command '${commandName}':`, error);
       if (error instanceof Error) {
-        await response.send(`Failed to execute command '${commandName}'. If you are the developer, please fix your code. \n\n${error.stack}`);
+        await response.send(`Failed to execute command '${commandName}'. If you are the developer, please fix your code.\n\n\`\`\`${error.stack}\`\`\``);
       } else {
         await response.send(`Failed to execute command '${commandName}'. An unexpected error occurred.`);
       }
     }
-  } else {
-    await response.send(`Command used doesn't **exist**.`);
-    await response.react("❓");
   }
 }
