@@ -57,7 +57,7 @@ export default async function commandHandler({ api, event }) {
   };
 
   if (!command) {
-    await response.send(`Command **${commandName}** doesn't exist.`);
+    await response.send(`Command using doesn't **exist.**`);
     await response.react("❓");
     return;
   }
