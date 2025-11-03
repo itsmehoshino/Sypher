@@ -72,7 +72,7 @@ const command: SypherAI.Command = {
 
     for (const line of lines) {
       await response.send(line);
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      await new Promise(resolve => setTimeout(resolve, 5000));
     }
   },
 };
