@@ -27,7 +27,7 @@ export default async function handleGoibot({ api, event }: { api: any; event: an
   }
 
   if (message === "👍") {
-    const musicPath = "./plugins/music/relapse.mp3";
+    const musicPath = "./source/controls/patches/plugins/music/relapse.mp3";
     await response.upload("Aray mo!!, Ni-like zone ni **crush**.", musicPath);
     await response.react("😢");
     return true;
@@ -35,3 +35,4 @@ export default async function handleGoibot({ api, event }: { api: any; event: an
 
   return false;
 }
+
