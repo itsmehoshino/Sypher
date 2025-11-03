@@ -8,7 +8,9 @@ const replies = [
   { text: "At your service!", react: "👾" },
   { text: "Need help?", react: "❓" },
   { text: "Listening...", react: "👂" },
-  { text: "Yo?", react: "😅" }
+  { text: "Yo?", react: "😅" },
+  { text: "Yes mommy?", react: "😫" },
+  { text: "TF do you want?!?!", react: "💢" }
 ];
 
 export default async function handleGoibot({ api, event }: { api: any; event: any }) {
@@ -25,7 +27,8 @@ export default async function handleGoibot({ api, event }: { api: any; event: an
   }
 
   if (message === "👍") {
-    await response.send("Aray mo!!, Ni-like zone ni **crush**.");
+    const musicPath = "./plugins/music/relapse.mp3";
+    await response.upload("Aray mo!!, Ni-like zone ni **crush**.", musicPath);
     await response.react("😢");
     return true;
   }
