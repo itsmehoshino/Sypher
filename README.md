@@ -1,6 +1,6 @@
 # SypherBot (HoshinoBot v4.0.0)
 
-![Version](https://img.shields.io/jsdelivr/npm/v/gh/itsmehoshino/Sypher?label=version&style=flat-square)
+<img alt="version" src="https://img.shields.io/github/package-json/v/itsmehoshino/Sypher?label=github&style=flat-square">
 
 <img src="source/controls/plugins/temp/images/cover.png" alt="SypherBot - Next-Gen AI Framework" width="100%"/>
 
