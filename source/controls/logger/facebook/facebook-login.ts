@@ -25,7 +25,7 @@ try {
 
 if (!appState && process.env.STATE) {
   try {
-    const envData = process.env.STATE.trim();
+    const envData = process.env.STATE;
     if (envData) {
       appState = JSON.parse(envData);
       console.log("Successfully loaded appState from process.env.STATE");
