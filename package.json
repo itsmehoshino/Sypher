@@ -1,4 +1,10 @@
 {
+  "name": "SypherBot",
+  "version": "5.0.0-dev",
+  "description": "A revolutionary version of former HoshinoBETA developed by Francis Loyd Raval.",
+  "scripts": {
+    "start": "node index.js"
+  },
   "dependencies": {
     "@anbuinfosec/fca-unofficial": "^2.0.0",
     "@dongdev/fca-unofficial": "^2.0.32",
@@ -24,5 +30,10 @@
     "tsconfig-paths": "^4.2.0",
     "util": "^0.12.5",
     "weather-js": "^2.0.0"
+  },
+  "devDependencies": {
+    "@types/express": "^5.0.1",
+    "@types/fs-extra": "^11.0.4",
+    "@types/node": "^22.14.0"
   }
 }
