@@ -3,8 +3,31 @@ import * as fs from "fs";
 import listener from "@sy-listener";
 import { log } from "@sy-log";
 
+let appState: any;
+
+try {
+  const rawData = fs.readFileSync("appstate.json", "utf8");
+  appState = rawData.trim() ? JSON.parse(rawData) : null;
+} catch (error) {
+  appState = null;
+}
+
+if (!appState && process.env.STATE) {
+  try {
+    appState = JSON.parse(process.env.STATE);
+  } catch (parseError) {
+    console.error("Failed to parse process.env.STATE as JSON");
+    process.exit(1);
+  }
+}
+
+if (!appState) {
+  console.error("No valid appState found in appstate.json or process.env.STATE");
+  process.exit(1);
+}
+
 const credentials = {
-  appState: JSON.parse(fs.readFileSync("appstate.json", "utf8"))
+  appState
 };
 
 export async function facebookLogin() {
@@ -26,7 +49,7 @@ export async function facebookLogin() {
         }
         listener({ api, event });
       } catch (error: any) {
-        console.log("ERROR", "Error whilst listening: " + error);
+        log("ERROR", "Error whilst listening: " + error);
       }
     });
   });
