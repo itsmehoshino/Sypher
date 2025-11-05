@@ -6,7 +6,16 @@ const command: SypherAI.Command = {
   aliases: ["h", "?", "menu"],
   cooldowns: 5,
   description: "Displays a list of available commands",
-
+  category: "Utility",
+  config: {
+    maintenance: false,
+    usePrefix: false,
+    limiter: {
+      isLimit: false,
+      limitUsage: 0,
+      time: 0
+    }
+  },
   async onCall({ response, args }) {
     const commands = globalThis.Sypher.commands;
 

@@ -11,9 +11,15 @@ declare global {
       commands: Map<string, any>;
       events: Map<string, any>;
       cooldowns: Map<string, number>;
+      usageLimits: Map<string, UsageLimitData>;
       replies: Map<string, any>;
       reactions: Map<string, any>;
       utils: SypherUtils;
+    }
+
+    interface UsageLimitData {
+      count: number;
+      resetAt: number;
     }
 
     interface Command {
@@ -24,6 +30,16 @@ declare global {
       aliases: string[];
       cooldowns: number;
       description: string;
+      category: string;
+      config: {
+      maintenance: boolean;
+      usePrefix: boolean;
+      limiter: {
+        isLimit: boolean;
+        limitUsage: number;
+        time: number;
+       };
+      };
       onCall: (ctx: CommandContext) => Promise<void>
     }
 

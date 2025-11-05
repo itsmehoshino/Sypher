@@ -58,6 +58,7 @@ globalThis.Sypher = {
   events: new Map(),
   cooldowns: new Map(),
   replies: new Map(),
+  usageLimits: new Map(),
   reactions: new Map(),
   utils: utils,
 };

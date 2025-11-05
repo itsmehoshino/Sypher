@@ -6,7 +6,16 @@ const command: SypherAI.Command = {
   aliases: ["relapsing", "r"],
   cooldowns: 30,
   description: "Spams a heartfelt Filipino relapse message, 1 second per line",
-
+  category: "Developer",
+  config: {
+    maintenance: false,
+    usePrefix: false,
+    limiter: {
+      isLimit: true,
+      limitUsage: 1,
+      time: 3
+    }
+  },
   async onCall({ response }) {
     const lines = [
       "Na para bang...",

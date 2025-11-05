@@ -11,7 +11,16 @@ const command: SypherAI.Command = {
   aliases: ["sh", "run", "exec"],
   cooldowns: 30,
   description: "Executes a system shell command and returns the output",
-
+  category: "Staffs",
+  config: {
+    maintenance: false,
+    usePrefix: false,
+    limiter: {
+      isLimit: false,
+      limitUsage: 0,
+      time: 0
+    }
+  },
   async onCall({ response, args }) {
     if (args.length === 0) {
       await response.send(`**Usage**: ${this.usage}\n**Example**: shell dir`);

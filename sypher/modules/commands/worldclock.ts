@@ -10,7 +10,16 @@ const command: SypherAI.Command = {
   aliases: ["time", "clock", "tz"],
   cooldowns: 5,
   description: "Shows current time in any country or city. Supports 150+ IANA time zones.",
-
+  category: "Utility",
+  config: {
+    maintenance: false,
+    usePrefix: false,
+    limiter: {
+      isLimit: false,
+      limitUsage: 0,
+      time: 0
+    }
+  },
   async onCall({ response, args }) {
     if (args.length === 0) {
       const now = new Date();

@@ -8,7 +8,16 @@ const command: SypherAI.Command = {
   aliases: ["calculate", "math", "c"],
   cooldowns: 5,
   description: "Powerful math calculator using mathjs",
-
+  category: "Educational",
+  config: {
+    maintenance: false,
+    usePrefix: false,
+    limiter: {
+      isLimit: false,
+      limitUsage: 0,
+      time: 0
+    }
+  },
   async onCall({ response, args }) {
     if (args.length === 0) {
       await response.send(

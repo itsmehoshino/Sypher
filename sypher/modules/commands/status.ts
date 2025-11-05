@@ -9,7 +9,16 @@ const command: SypherAI.Command = {
   aliases: ["uptime", "up", "stats", "botinfo", "info"],
   cooldowns: 5,
   description: "Displays comprehensive real-time bot and server information",
-
+  category: "System",
+  config: {
+    maintenance: false,
+    usePrefix: false,
+    limiter: {
+      isLimit: false,
+      limitUsage: 0,
+      time: 0
+    }
+  },
   async onCall({ response }) {
     const start = Date.now();
 
