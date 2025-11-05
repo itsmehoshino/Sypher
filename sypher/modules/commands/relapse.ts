@@ -1,157 +1,30 @@
-[
-    {
-        "domain": ".facebook.com",
-        "expirationDate": 1796788493.234595,
-        "hostOnly": false,
-        "httpOnly": true,
-        "name": "ps_l",
-        "path": "/",
-        "sameSite": "lax",
-        "secure": true,
-        "session": false,
-        "storeId": null,
-        "value": "1"
-    },
-    {
-        "domain": ".facebook.com",
-        "expirationDate": 1796893489.732712,
-        "hostOnly": false,
-        "httpOnly": true,
-        "name": "datr",
-        "path": "/",
-        "sameSite": "no_restriction",
-        "secure": true,
-        "session": false,
-        "storeId": null,
-        "value": "MBMLaXjUSR7kDeV7KVRZboa9"
-    },
-    {
-        "domain": ".facebook.com",
-        "expirationDate": 1770124085.963421,
-        "hostOnly": false,
-        "httpOnly": true,
-        "name": "fr",
-        "path": "/",
-        "sameSite": "no_restriction",
-        "secure": true,
-        "session": false,
-        "storeId": null,
-        "value": "0AzcZKsaEfF6ulYQ9.AWf79ZPjEHlUVBLdxL3j5oAe6yBcEA-QGKXqmA6ZMm38uFsfi8I.Bo_hv1..AAA.0.0.BpC0w0.AWehyBg0aVl5sbu6KsLH9mjfrmM"
-    },
-    {
-        "domain": ".facebook.com",
-        "expirationDate": 1767176313,
-        "hostOnly": false,
-        "httpOnly": false,
-        "name": "vpd",
-        "path": "/",
-        "sameSite": "lax",
-        "secure": true,
-        "session": false,
-        "storeId": null,
-        "value": "v1%3B660x360x2"
-    },
-    {
-        "domain": ".facebook.com",
-        "expirationDate": 1793884085.964042,
-        "hostOnly": false,
-        "httpOnly": true,
-        "name": "xs",
-        "path": "/",
-        "sameSite": "no_restriction",
-        "secure": true,
-        "session": false,
-        "storeId": null,
-        "value": "17%3AOa8bmwQJcZYiew%3A2%3A1762348084%3A-1%3A-1"
-    },
-    {
-        "domain": ".facebook.com",
-        "expirationDate": 1793884085.962409,
-        "hostOnly": false,
-        "httpOnly": false,
-        "name": "c_user",
-        "path": "/",
-        "sameSite": "no_restriction",
-        "secure": true,
-        "session": false,
-        "storeId": null,
-        "value": "61581385337960"
-    },
-    {
-        "domain": ".facebook.com",
-        "hostOnly": false,
-        "httpOnly": false,
-        "name": "presence",
-        "path": "/",
-        "sameSite": null,
-        "secure": true,
-        "session": true,
-        "storeId": null,
-        "value": "C%7B%22lm3%22%3A%22g.9671882142862219%22%2C%22t3%22%3A%5B%5D%2C%22utc3%22%3A1762348109453%2C%22v%22%3A1%7D"
-    },
-    {
-        "domain": ".facebook.com",
-        "expirationDate": 1796552318.390094,
-        "hostOnly": false,
-        "httpOnly": true,
-        "name": "pas",
-        "path": "/",
-        "sameSite": "lax",
-        "secure": true,
-        "session": false,
-        "storeId": null,
-        "value": "61581385337960%3AHEW4cEatdb"
-    },
-    {
-        "domain": ".facebook.com",
-        "expirationDate": 1796788493.279983,
-        "hostOnly": false,
-        "httpOnly": true,
-        "name": "ps_n",
-        "path": "/",
-        "sameSite": "no_restriction",
-        "secure": true,
-        "session": false,
-        "storeId": null,
-        "value": "1"
-    },
-    {
-        "domain": ".facebook.com",
-        "expirationDate": 1796908085.963732,
-        "hostOnly": false,
-        "httpOnly": true,
-        "name": "sb",
-        "path": "/",
-        "sameSite": "no_restriction",
-        "secure": true,
-        "session": false,
-        "storeId": null,
-        "value": "9Rv-aDDU5fu5AUIO9_eq4o_M"
-    },
-    {
-        "domain": ".facebook.com",
-        "expirationDate": 1762952899,
-        "hostOnly": false,
-        "httpOnly": false,
-        "name": "wd",
-        "path": "/",
-        "sameSite": "lax",
-        "secure": true,
-        "session": false,
-        "storeId": null,
-        "value": "988x1811"
-    },
-    {
-        "domain": ".facebook.com",
-        "expirationDate": 1769768318,
-        "hostOnly": false,
-        "httpOnly": false,
-        "name": "wl_cbv",
-        "path": "/",
-        "sameSite": "no_restriction",
-        "secure": true,
-        "session": false,
-        "storeId": null,
-        "value": "v2%3Bclient_version%3A2970%3Btimestamp%3A1761992312"
+import { relapseCategories } from "@sy-patches/relapse-categories";
+
+const categories = Object.keys(relapseCategories) as (keyof typeof relapseCategories)[];
+
+const command: SypherAI.Command = {
+  name: "relapse",
+  role: 1,
+  usage: "relapse",
+  author: "Francis Loyd Raval",
+  aliases: ["relapsing", "r"],
+  cooldowns: 30,
+  description: "Spams a 60-sec cinematic relapse (torpe / movingon / breakup / ghosting), 1 sec per line",
+  category: "Developer",
+  config: {
+    maintenance: false,
+    usePrefix: false,
+    limiter: { isLimit: true, limitUsage: 1, time: 3 }
+  },
+  async onCall({ response }) {
+    const category = categories[Math.floor(Math.random() * categories.length)];
+    const lines = relapseCategories[category];
+
+    for (const line of lines) {
+      await response.send(line);
+      await new Promise(r => setTimeout(r, 1000));
     }
-]
+  },
+};
+
+export default command;
