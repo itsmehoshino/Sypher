@@ -7,10 +7,10 @@
 ## Contents
  - [Introduction](#introduction)
  - [Features](#features)
- - [Getting Started](#gettingstarted)
-   - [Installing](#installing)
-   - [Command Layout](#commandlayout)
-   - [Event Layout](#eventlayout)
+ - [Start-Up](#start-up) 
+ - [Getting Started](#getting_started)
+   - [Command Layout](#command_layout)
+   - [Event Layout](#event_layout)
    - [Response (Usage)](#response)
  - [Credentials](#credentials)
 
@@ -29,8 +29,69 @@ Welcome to **SypherAI** — a **next-generation, fully re-engineered evolution**
 - **Intuitive command & event DSL**
 - **Full TypeScript & ESM support**
 
+<img align="center" src="https://i.postimg.cc/44B5yKFR/Screenshot-20231222-205143.png"/>
+
+## Start-up
+ To start up the system make sure you have the following requirements:
+  - Facebook Account
+  - Cookie Editor
+  - Forked Sypher file
+
+> _**Note:**_ *If you dont have the Cookie Editor Extension, you may download it [here](https://cookie-editor.com/)*
+
+## Installing
+
+```bash
+git clone https://github.com/itsmehoshino/Sypher; cp -r Sypher/. .; rm -rf Sypher
+```
+
 ## Features
-
-
+- **Typescript and ESM Support**
+- **Zero Downtime deployment**
+- **TypeSafety function**
+- **Easy built-in command and event structure**
+- **AutoFonts and AutoStyler function**
+- **Anti-change credentials**
+- **Enhanced readability**
+- **Hidden state function**
+- **Enhanced and real-time settings and config**
 
 ## Getting Started
+Dive into development with our streamlined onboarding process. SypherAI abstracts complexity so you can focus on creating powerful bot behaviors.
+
+## Command Layout
+Commands follow a declarative, intuitive structure:
+
+```Typescript
+const command: SypherAI.Command = {
+  name: "",
+  role: 0,
+  usage: "",
+  author: "",
+  aliases: ["", ""],
+  cooldowns: 0,
+  description: "",
+  category: "",
+  config: {
+   maintenance: false,
+   usePrefix: false,
+   limiter: {
+    isLimit: false,
+    limitUsage: 0,
+   }
+  }
+
+  async onCall({ response }) {
+    await response.send("");
+  },
+};
+
+export default command;
+```
+
+
+## Credentials
+This system was developed entirely by Francis Loyd Raval. If you want to contribute, report bugs, or request features, feel free to reach out via the following channels. Also, drop a follow to stay updated on releases and behind-the-scenes progress:
+
+> **Facebook:** [**Francis Loyd Raval**](https://www.facebook.com/mannamedfrancis)
+> **Discord:** [**Join the community server**](https://discord.gg/5P56MTm8)
