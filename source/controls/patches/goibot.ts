@@ -15,6 +15,22 @@ const replies = [
   { text: "Yes daddy?", react: "🥵" }
 ];
 
+const laughKeywords = [
+  "hahaha", "haha", "hehe", "heh", "lol", "lmao", "lmfao",
+  "kakakaka", "jajaja", "hasoy", "pota", "tangina",
+  "hahahaha", "ahahaha", "wkwkwk", "huehue", "kek", "lolz",
+  "😂", "🤣", "😆", "😅"
+];
+
+const pinoyReplies = [
+  "Tawang tawa yarn? 😭",
+  "Grabe ka makatawa HAHAHA",
+  "Pucha ang saya mo ah 😂",
+  "Ayaw mo tigilan 'no? 🤣",
+  "Hala sige, baka maubusan ka ng hininga jan!",
+  "Laugh trip ka talaga teh! 😆"
+];
+
 export default async function handleGoibot({ api, event }: { api: any; event: any }) {
   const message = event.body?.trim();
   const lowerMessage = message?.toLowerCase();
@@ -35,8 +51,13 @@ export default async function handleGoibot({ api, event }: { api: any; event: an
     return true;
   }
 
-  if (lowerMessage === "hahaha") {
-    await response.send("Tawang tawa yarn?");
+  const isLaughing = laughKeywords.some(keyword => 
+    lowerMessage.includes(keyword) || message.includes(keyword)
+  );
+
+  if (isLaughing) {
+    const randomReply = pinoyReplies[Math.floor(Math.random() * pinoyReplies.length)];
+    await response.send(randomReply);
     await response.react("😆");
     return true;
   }
@@ -44,6 +65,12 @@ export default async function handleGoibot({ api, event }: { api: any; event: an
   if (lowerMessage === "augh") {
     await response.send("Oh fu... don't goon bro..");
     await response.react("😣");
+    return true;
+  }
+
+  if (lowerMessage === "hbd" || lowerMessage === "happy birthday" || message === "🎂") {
+    await response.send("**Happy Birthday** dear user!!");
+    await response.react("🥳");
     return true;
   }
 
