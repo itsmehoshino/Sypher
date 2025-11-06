@@ -10,7 +10,9 @@ const replies = [
   { text: "Listening...", react: "👂" },
   { text: "Yo?", react: "😅" },
   { text: "Yes mommy?", react: "😫" },
-  { text: "TF do you want?!?!", react: "💢" }
+  { text: "TF do you want?!?!", react: "💢" },
+  { text: "WHAT?!?", react: "😤" },
+  { text: "Yes daddy?", react: "🥵" }
 ];
 
 export default async function handleGoibot({ api, event }: { api: any; event: any }) {
@@ -30,6 +32,18 @@ export default async function handleGoibot({ api, event }: { api: any; event: an
     const musicPath = "./source/controls/patches/plugins/music/relapse.mp3";
     await response.upload("Aray mo!!, Ni-like zone ni **crush**.", musicPath);
     await response.react("😢");
+    return true;
+  }
+
+  if (lowerMessage === "hahaha") {
+    await response.send("Tawang tawa yarn?");
+    await response.react("😆");
+    return true;
+  }
+
+  if (lowerMessage === "augh") {
+    await response.send("Oh fu... don't goon bro..");
+    await response.react("😣");
     return true;
   }
 
