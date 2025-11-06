@@ -9,12 +9,15 @@ const command: SypherAI.Command = {
   author: "Francis Loyd Raval",
   aliases: ["relapsing", "r"],
   cooldowns: 30,
-  description: "Spams a 60-sec cinematic relapse (torpe / movingon / breakup / ghosting), 1 sec per line",
+  description: "Spams a 60-sec cinematic relapse (torpe / movingon / breakup / ghosting), 10 sec per line",
   category: "Developer",
   config: {
     maintenance: false,
     usePrefix: false,
-    limiter: { isLimit: true, limitUsage: 1, time: 3 }
+    limiter: { 
+      isLimit: true, 
+      limitUsage: 1, 
+      time: 3 }
   },
   async onCall({ response }) {
     const category = categories[Math.floor(Math.random() * categories.length)];
@@ -22,7 +25,7 @@ const command: SypherAI.Command = {
 
     for (const line of lines) {
       await response.send(line);
-      await new Promise(r => setTimeout(r, 1000));
+      await new Promise(r => setTimeout(r, 10000));
     }
   },
 };
