@@ -1,4 +1,4 @@
-import { login } from "biar-fca";
+ import { login } from "biar-fca";
 import * as fs from "fs";
 import listener from "@sy-listener";
 import { log } from "@sy-log";
@@ -49,7 +49,13 @@ console.log(`Loaded ${cookieCount} cookie(s) for login`);
 const credentials = { appState };
 
 export async function facebookLogin() {
-  login(credentials, { updatePresence: true, autoMarkRead: true }, (err: any, api: any) => {
+  const { config } = globalThis.Sypher;
+  login(credentials, {
+    listenEvents: config.fcaOptions.listenEvents,
+    selfListen: config.fcaOptions.selfListen,
+    autoMarkRead: config.fcaOptions.autoMarkRead,
+    userAgent: config.fcaOptions.userAgent,
+  }, (err: any, api: any) => {
     if (err) {
       console.error("Login failed:", err);
       return;
