@@ -1,10 +1,11 @@
 import { applyAutoFonts, stripCustomFonts, censorBadWords } from "@sy-patches/autofonts";
+import { API } from "biar-fca";
 import * as fs from "fs";
 import * as path from "path";
 
 export default class Response {
-  private api: any;
-  private event: any;
+  private api: API;
+  private event: SypherAI.CommandContext["event"];
 
   constructor(api: any, event: any) {
     this.api = api;
