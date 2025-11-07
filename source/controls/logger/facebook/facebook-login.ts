@@ -1,4 +1,4 @@
- import { login } from "biar-fca";
+import { login } from "biar-fca";
 import * as fs from "fs";
 import listener from "@sy-listener";
 import { log } from "@sy-log";
