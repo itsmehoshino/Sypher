@@ -51,10 +51,10 @@ const credentials = { appState };
 export async function facebookLogin() {
   const { config } = globalThis.Sypher;
   login(credentials, {
-    listenEvents: config.fcaOptions.listenEvents,
     selfListen: config.fcaOptions.selfListen,
     autoMarkRead: config.fcaOptions.autoMarkRead,
     userAgent: config.fcaOptions.userAgent,
+    listenEvents: config.fcaOptions.listenEvents,
   }, (err: any, api: any) => {
     if (err) {
       console.error("Login failed:", err);
