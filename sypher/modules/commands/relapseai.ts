@@ -1,7 +1,7 @@
-import axios from "axios";
+import axios, { AxiosError } from "axios";
 
 const command: SypherAI.Command = {
-  name: "relapseai",
+  name: "relapse",
   role: 0,
   usage: "relapse <text>",
   author: "JrDev03",
@@ -15,6 +15,7 @@ const command: SypherAI.Command = {
     limiter: {
       isLimit: false,
       limitUsage: 0,
+      time: 0,
     },
   },
 
@@ -33,18 +34,31 @@ const command: SypherAI.Command = {
           text,
           systemPrompt,
         },
+        timeout: 10000,
       });
 
       if (!res.data?.success) {
         return await response.send("Bat mo kasi hinahanap yung taong ayaw sayo?");
       }
 
-      const quote = res.data.result.trim().replace(/^"|"$/g, "");
+      const quote = res.data.result?.trim().replace(/^"|"$/g, "");
 
       await response.send(quote || "Walang kayo putangina mo.");
     } catch (err) {
-      console.error(err);
-      await response.send("Putangina mo pala eh.");
+      if (err instanceof AxiosError) {
+        if (err.code === "ERR_NETWORK" || err.code === "ECONNABORTED") {
+          return await response.send("Ayaw mag-load ng API, parang ex mo na block ka na.");
+        }
+        if (err.response) {
+          return await response.send("May problema sa server, parang puso mo — sira.");
+        }
+        if (err.request) {
+          return await response.send("Walang response, parang pag-ibig mo — one-sided.");
+        }
+      }
+
+      console.error("Relapse Error:", err);
+      await response.send("Putangina mo pala eh, may error.");
     }
   },
 };
