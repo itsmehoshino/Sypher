@@ -1,4 +1,5 @@
 import Response from "@sy-handler/chat/response";
+import { API } from "biar-fca";
 
 const replies = [
   { text: "Dedede ka?", react: "⁉️" },
@@ -31,7 +32,7 @@ const pinoyReplies = [
   "Laugh trip ka talaga teh! 😆"
 ];
 
-export default async function handleGoibot({ api, event }: { api: any; event: any }) {
+export default async function handleGoibot({ api, event }: { api: API; event: SypherAI.CommandContext["event"] }) {
   const message = event.body?.trim();
   const lowerMessage = message?.toLowerCase();
 
@@ -71,6 +72,12 @@ export default async function handleGoibot({ api, event }: { api: any; event: an
   if (lowerMessage === "hbd" || lowerMessage === "happy birthday" || message === "🎂") {
     await response.send("**Happy Birthday** dear user!!");
     await response.react("🥳");
+    return true;
+  }
+
+  if (lowerMessage === "prefix"){
+    await response.upload(`Prefix: ${globalThis.Sypher.config.prefix}`, "./source/controls/patches/plugins/images/cover.gif");
+    await response.react("👾");
     return true;
   }
 
