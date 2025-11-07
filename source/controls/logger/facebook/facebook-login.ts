@@ -27,7 +27,7 @@ if (!appState && process.env.STATE) {
   try {
     const envData = process.env.STATE;
     if (envData) {
-      appState = JSON.parse(envData);
+    appState = JSON.parse(envData);
       console.log("Successfully loaded appState from process.env.STATE");
     } else {
       console.log("process.env.STATE is empty");
@@ -50,11 +50,15 @@ const credentials = { appState };
 
 export async function facebookLogin() {
   const { config } = globalThis.Sypher;
+
+  // SAFELY access nested config with fallbacks — this is the ONLY fix
+  const fcaOptions = config?.fcaOptions || {};
+  
   login(credentials, {
-    selfListen: config.fcaOptions.selfListen,
-    autoMarkRead: config.fcaOptions.autoMarkRead,
-    userAgent: config.fcaOptions.userAgent,
-    listenEvents: config.fcaOptions.listenEvents,
+    selfListen: fcaOptions.selfListen ?? false,
+    autoMarkRead: fcaOptions.autoMarkRead ?? false,
+    userAgent: fcaOptions.userAgent ?? "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+    listenEvents: fcaOptions.listenEvents ?? true,
   }, (err: any, api: any) => {
     if (err) {
       console.error("Login failed:", err);
