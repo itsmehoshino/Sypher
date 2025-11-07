@@ -94,4 +94,4 @@ export default command;
 This system was developed entirely by Francis Loyd Raval. If you want to contribute, report bugs, or request features, feel free to reach out via the following channels. Also, drop a follow to stay updated on releases and behind-the-scenes progress:
 
 > **Facebook:** [**Francis Loyd Raval**](https://www.facebook.com/mannamedfrancis)
-> **Discord:** [**Join the community server**](https://discord.gg/5P56MTm8)
+> **Discord:** [**Francis Loyd Raval**](https://discord.gg/5P56MTm8)
