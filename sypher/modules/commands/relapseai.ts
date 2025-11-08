@@ -1,7 +1,7 @@
 import axios, { AxiosError } from "axios";
 
 const command: SypherAI.Command = {
-  name: "relapse",
+  name: "relapseai",
   role: 0,
   usage: "relapse <text>",
   author: "JrDev03",
@@ -19,9 +19,12 @@ const command: SypherAI.Command = {
     },
   },
 
-  async onCall({ args, response }) {
+  async onCall(ctx) {
+    const { args, response } = ctx;
+
     if (!args.length) {
-      return await response.send("Please provide something to hugot kung ayaw mong sapakin kita.");
+      await response.send("Please provide something to hugot kung ayaw mong sapakin kita.");
+      return;
     }
 
     const text = args.join(" ");
@@ -38,7 +41,8 @@ const command: SypherAI.Command = {
       });
 
       if (!res.data?.success) {
-        return await response.send("Bat mo kasi hinahanap yung taong ayaw sayo?");
+        await response.send("Bat mo kasi hinahanap yung taong ayaw sayo?");
+        return;
       }
 
       const quote = res.data.result?.trim().replace(/^"|"$/g, "");
@@ -47,13 +51,16 @@ const command: SypherAI.Command = {
     } catch (err) {
       if (err instanceof AxiosError) {
         if (err.code === "ERR_NETWORK" || err.code === "ECONNABORTED") {
-          return await response.send("Ayaw mag-load ng API, parang ex mo na block ka na.");
+          await response.send("Ayaw mag-load ng API, parang ex mo na block ka na.");
+          return;
         }
         if (err.response) {
-          return await response.send("May problema sa server, parang puso mo — sira.");
+          await response.send("May problema sa server, parang puso mo — sira.");
+          return;
         }
         if (err.request) {
-          return await response.send("Walang response, parang pag-ibig mo — one-sided.");
+          await response.send("Walang response, parang pag-ibig mo — one-sided.");
+          return;
         }
       }
 
