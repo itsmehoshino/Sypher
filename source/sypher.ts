@@ -10,12 +10,12 @@ const bot = new EventEmitter();
 globalThis.bot = bot;
 globalThis.log = log;
 
-process.on("unhandledRejection", (error) => {
+process.on("unhandledRejection", (error: unknown) => {
   const err = error instanceof Error ? error : new Error(String(error));
   log("ERROR", `Unhandled rejection:\n${err.stack}`);
 });
 
-process.on("uncaughtException", (error) => {
+process.on("uncaughtException", (error: unknown) => {
   const err = error instanceof Error ? error : new Error(String(error));
   log("ERROR", `Uncaught exception:\n${err.stack}`);
 });
@@ -38,8 +38,8 @@ globalThis.Sypher = {
       }
 
       return JSON.parse(fs.readFileSync(configPath, "utf8"));
-    } catch (error) {
-      log("ERROR", `Error reading config file:\n${error.stack}`);
+    } catch (error: unknown) {
+      log("ERROR", `Error reading config file:\n${error instanceof Error ? error.stack : String(error)}`);
       return {
         prefix: "!",
         subprefix: ".",
@@ -56,8 +56,8 @@ globalThis.Sypher = {
       const finalData = { ...currentConfig, ...newConfig };
       const str = JSON.stringify(finalData, null, 2);
       fs.writeFileSync(configPath, str, "utf8");
-    } catch (error) {
-      log("ERROR", `Error writing config file:\n${error.stack}`);
+    } catch (error: unknown) {
+      log("ERROR", `Error writing config file:\n${error instanceof Error ? error.stack : String(error)}`);
       throw error;
     }
   },
