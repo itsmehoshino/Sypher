@@ -11,19 +11,13 @@ globalThis.bot = bot;
 globalThis.log = log;
 
 process.on("unhandledRejection", (error) => {
-  if (error instanceof Error) {
-    log("ERROR", `Unhandled rejection:\n${error.stack}`);
-  } else {
-    log("ERROR", `Unhandled rejection (non-Error): ${error}`);
-  }
+  const err = error instanceof Error ? error : new Error(String(error));
+  log("ERROR", `Unhandled rejection:\n${err.stack}`);
 });
 
 process.on("uncaughtException", (error) => {
-  if (error instanceof Error) {
-    log("ERROR", `Uncaught exception:\n${error.stack}`);
-  } else {
-    log("ERROR", `Uncaught exception (non-Error): ${error}`);
-  }
+  const err = error instanceof Error ? error : new Error(String(error));
+  log("ERROR", `Uncaught exception:\n${err.stack}`);
 });
 
 globalThis.Sypher = {
@@ -77,11 +71,11 @@ globalThis.Sypher = {
 };
 
 Object.assign(globalThis.Sypher, {
-  get prefix() { return this.config.prefix; },
-  get subprefix() { return this.config.subprefix; },
-  get administrators() { return this.config.administrators; },
-  get moderators() { return this.config.moderators; },
-  get developers() { return this.config.developers; },
+  get prefix() { return globalThis.Sypher.config.prefix; },
+  get subprefix() { return globalThis.Sypher.config.subprefix; },
+  get administrators() { return globalThis.Sypher.config.administrators; },
+  get moderators() { return globalThis.Sypher.config.moderators; },
+  get developers() { return globalThis.Sypher.config.developers; },
 });
 
 async function main(){
