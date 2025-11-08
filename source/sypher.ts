@@ -10,8 +10,21 @@ const bot = new EventEmitter();
 globalThis.bot = bot;
 globalThis.log = log;
 
-process.on("unhandledRejection", (error) => log("ERROR", error));
-process.on("uncaughtException", (error) => log("ERROR", error.stack));
+process.on("unhandledRejection", (error) => {
+  if (error instanceof Error) {
+    log("ERROR", `Unhandled rejection:\n${error.stack}`);
+  } else {
+    log("ERROR", `Unhandled rejection (non-Error): ${error}`);
+  }
+});
+
+process.on("uncaughtException", (error) => {
+  if (error instanceof Error) {
+    log("ERROR", `Uncaught exception:\n${error.stack}`);
+  } else {
+    log("ERROR", `Uncaught exception (non-Error): ${error}`);
+  }
+});
 
 globalThis.Sypher = {
   get config() {
@@ -32,7 +45,7 @@ globalThis.Sypher = {
 
       return JSON.parse(fs.readFileSync(configPath, "utf8"));
     } catch (error) {
-      console.log("ERROR", "Error reading config file");
+      log("ERROR", `Error reading config file:\n${error.stack}`);
       return {
         prefix: "!",
         subprefix: ".",
@@ -50,7 +63,7 @@ globalThis.Sypher = {
       const str = JSON.stringify(finalData, null, 2);
       fs.writeFileSync(configPath, str, "utf8");
     } catch (error) {
-      console.log("ERROR","Error writing config file.");
+      log("ERROR", `Error writing config file:\n${error.stack}`);
       throw error;
     }
   },
@@ -63,32 +76,12 @@ globalThis.Sypher = {
   utils: utils,
 };
 
-Object.defineProperties(globalThis.Sypher, {
-  prefix: {
-    get() {
-      return this.config.prefix;
-    },
-  },
-  subprefix: {
-    get() {
-      return this.config.subprefix;
-    },
-  },
-  administrators: {
-    get() {
-      return this.config.administrators;
-    },
-  },
-  moderators: {
-    get() {
-      return this.config.moderators;
-    },
-  },
-  developers: {
-    get() {
-      return this.config.developers;
-    },
-  },
+Object.assign(globalThis.Sypher, {
+  get prefix() { return this.config.prefix; },
+  get subprefix() { return this.config.subprefix; },
+  get administrators() { return this.config.administrators; },
+  get moderators() { return this.config.moderators; },
+  get developers() { return this.config.developers; },
 });
 
 async function main(){
