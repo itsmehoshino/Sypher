@@ -54,6 +54,7 @@ declare global {
       event: Omit<Message, "type"> & { type: "message" | "messageReply" };
       args: string[];
       response: Response;
+      UserInfo:typeof import("@sy-database/userinfo/unserinfo");
     }
 
     interface SypherUtils {

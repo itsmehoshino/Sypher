@@ -1,5 +1,6 @@
 import Response from "./chat/response";
 import handleGoibot from "@sy-patches/goibot";
+import UserInfo from "@sy-database/userdata/userdata";
 
 export default async function commandHandler({ api, event }) {
   const handled = await handleGoibot({ api, event });
@@ -156,7 +157,7 @@ export default async function commandHandler({ api, event }) {
     }
   }
 
-  const context: SypherAI.CommandContext = { api, response, args, event };
+  const context: SypherAI.CommandContext = { api, response, args, event, UserInfo };
 
   if (command && command.onCall) {
     try {

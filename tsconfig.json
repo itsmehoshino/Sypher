@@ -34,7 +34,8 @@
       "@sy-login": ["./source/controls/logger/botlogger.ts"],
       "@sy-database/*": ["./sypher/resources/database/*"],
       "@sy-styler/*": ["./sypher/resources/styles/*"],
-      "@sy-patches/*": ["./source/controls/patches/*"]
+      "@sy-patches/*": ["./source/controls/patches/*"],
+      "@sy-database/*": ["./sypher/resources/database/*"]
     }
   },
   "include": ["**/*.js", "**/*.ts"],
