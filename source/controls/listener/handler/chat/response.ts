@@ -7,7 +7,7 @@ export default class Response {
   private api: API;
   private event: SypherAI.CommandContext["event"];
 
-  constructor(api: any, event: any) {
+  constructor(api: API, event: SypherAI.CommandContext["event"]) {
     this.api = api;
     this.event = event;
   }

@@ -32,6 +32,17 @@ const pinoyReplies = [
   "Laugh trip ka talaga teh! 😆"
 ];
 
+const randomReplies = [
+  { text: "hey!", react: "🙋" },
+  { text: "Hello baby..", react: "🥰" },
+  { text: "Uyyy... buhay ka pa pala?", react: "😱" },
+  { text: "Eyyy... sup bro?", react: "😸" },
+  { text: "Hello!!!", react: "🤗" },
+  { text: "Hello mabuhay, welcome to kupal airlines!", react: "🤡" },
+  { text: "Eyy hello!! ready to spice things up?", react: "🤑" }, 
+  { text: "Hi? tas hello? tas nagkatuluyan tas goodbye sa huli?", react: "😕" }
+]
+
 export default async function handleGoibot({ api, event }: { api: API; event: SypherAI.CommandContext["event"] }) {
   const message = event.body?.trim();
   const lowerMessage = message?.toLowerCase();
@@ -75,9 +86,16 @@ export default async function handleGoibot({ api, event }: { api: API; event: Sy
     return true;
   }
 
-  if (lowerMessage === "prefix"){
+  if (lowerMessage === "prefix") {
     await response.upload(`Prefix: ${globalThis.Sypher.config.prefix}`, "./source/controls/patches/plugins/images/cover.gif");
     await response.react("👾");
+    return true;
+  }
+
+  if (lowerMessage === "hi" || lowerMessage === "hello") {
+    const { text, react } = randomReplies[Math.floor(Math.random() * randomReplies.length)];
+    await response.send(text);
+    await response.react(react);
     return true;
   }
 
