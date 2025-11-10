@@ -1,4 +1,5 @@
 import { API, Message } from "biar-fca";
+import UserInfo from "@sy-database/userdata/userdata";
 import Response from "@sy-handler/chat/response";
 
 declare global {
@@ -54,7 +55,7 @@ declare global {
       event: Omit<Message, "type"> & { type: "message" | "messageReply" };
       args: string[];
       response: Response;
-      UserInfo: typeof import("@sy-database/userdata/userdata");
+      userinfo: InstanceType<typeof UserInfo>;
     }
 
     interface SypherUtils {

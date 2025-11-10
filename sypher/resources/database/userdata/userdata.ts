@@ -1,95 +1,65 @@
-import { GlobalDB } from "@sy-database/globalDB";
+import { GlobalDB } from '@sy-database/globalDB';
 
 class UserInfo {
-  private static instance: UserInfo;
   private cache: ReturnType<typeof GlobalDB>;
   private api: any;
 
-  constructor(api?: any, collection = "userInfoCache") {
-    if (UserInfo.instance) {
-      return UserInfo.instance;
-    }
-
-    this.api = api || (globalThis as any).api;
-    if (!this.api) {
-      throw new Error(
-        "API not provided. Set globalThis.api or pass as new UserInfo(api)"
-      );
-    }
-
+  constructor({ api, collection = 'userInfo' }) {
+    this.api = api;
     this.cache = GlobalDB(collection);
-    UserInfo.instance = this;
   }
 
-  private async loadCache() {
-    return this.cache.load();
+  private async loadFile() {
+    return await this.cache.load();
   }
 
-  private async saveCache(data: Record<string, any>) {
-    await this.cache.bulkPut(data);
-    return this.loadCache();
+  private async saveFile(data: Record<string, any>) {
+    const current = await this.loadFile();
+    const finalData = { ...current, ...data };
+    await this.cache.bulkPut(finalData);
+    return finalData;
   }
 
-  async get(userId: string) {
+  async get(key: string) {
     try {
-      const allData = await this.loadCache();
-      if (allData[userId]) {
-        return allData[userId];
+      const allData = await this.loadFile();
+      if (key in allData) {
+        return allData[key];
       }
 
-      const info = await this.api.getUserInfo(userId);
-      const userInfo = info[userId] || info;
+      const info = await this.api.getUserInfo(key);
+      const { [key]: userInfo } = info;
 
-      const newEntry = {
-        [userId]: {
-          ...userInfo,
-          lastFetched: Date.now(),
-        },
-      };
+      if (!userInfo) return null;
 
-      await this.saveCache({ ...allData, ...newEntry });
-      return newEntry[userId];
+      allData[key] = { ...userInfo };
+      await this.saveFile(allData);
+      return allData[key];
     } catch (err) {
-      console.error("UserInfo.get error:", err);
+      console.log(err);
       return null;
     }
   }
 
-  async set(userId: string, updates: Record<string, any>) {
+  async set(key: string, newValue: Record<string, any>) {
     try {
-      const allData = await this.loadCache();
-      const current = allData[userId] || {};
-
-      const updated = {
-        [userId]: {
-          ...current,
-          ...updates,
-          lastUpdated: Date.now(),
-        },
-      };
-
-      return await this.saveCache({ ...allData, ...updated });
+      const allData = await this.loadFile();
+      const keyValue = allData[key] || {};
+      const updated = { ...allData, [key]: { ...keyValue, ...newValue } };
+      return await this.saveFile(updated);
     } catch (err) {
-      console.error("UserInfo.set error:", err);
-      return this.loadCache();
+      console.log(err);
+      return await this.loadFile();
     }
   }
 
   async getAll() {
     try {
-      return await this.loadCache();
+      return await this.loadFile();
     } catch (err) {
-      console.error("UserInfo.getAll error:", err);
+      console.log(err);
       return {};
     }
-  }
-
-  async clear() {
-    await this.cache.clear();
-  }
-
-  async remove(userId: string) {
-    await this.cache.remove(userId);
   }
 }
 

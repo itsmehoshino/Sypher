@@ -2,6 +2,8 @@ import Response from "./chat/response";
 import handleGoibot from "@sy-patches/goibot";
 import UserInfo from "@sy-database/userdata/userdata";
 
+const userinfo = new UserInfo({ api });
+
 export default async function commandHandler({ api, event }) {
   const handled = await handleGoibot({ api, event });
   if (handled) return;
@@ -68,7 +70,13 @@ export default async function commandHandler({ api, event }) {
   }
 
   if (command.role !== undefined && !checkRole(command.role)) {
-    const roleNames = { 0: "Everyone", 1: "Developer", 2: "Admin", 3: "Moderator", 4: "Staff" };
+    const roleNames = {
+      0: "Everyone",
+      1: "Developer",
+      2: "Admin",
+      3: "Moderator",
+      4: "Staff",
+    };
     const requiredName = roleNames[command.role] || "Restricted";
 
     let message = `You don't have permission to use this command.\nRequired: **${requiredName}**`;
@@ -91,38 +99,43 @@ export default async function commandHandler({ api, event }) {
   const limiter = command.config?.limiter;
   if (
     limiter?.isLimit === true &&
-    typeof limiter.limitUsage === "number" && limiter.limitUsage > 0 &&
-    typeof limiter.time === "number" && limiter.time > 0
+    typeof limiter.limitUsage === "number" &&
+    limiter.limitUsage > 0 &&
+    typeof limiter.time === "number" &&
+    limiter.time > 0
   ) {
     const limitKey = `limit_${userId}_${commandName}`;
     const now = Date.now();
 
     let usageData = globalThis.Sypher.usageLimits.get(limitKey) || {
       count: 0,
-      resetAt: now + (limiter.time * 24 * 60 * 60 * 1000)
+      resetAt: now + limiter.time * 24 * 60 * 60 * 1000,
     };
 
     if (now >= usageData.resetAt) {
       usageData = {
         count: 0,
-        resetAt: now + (limiter.time * 24 * 60 * 60 * 1000)
+        resetAt: now + limiter.time * 24 * 60 * 60 * 1000,
       };
     }
 
     if (usageData.count >= limiter.limitUsage) {
       const timeLeftMs = usageData.resetAt - now;
       const days = Math.floor(timeLeftMs / (24 * 60 * 60 * 1000));
-      const hours = Math.floor((timeLeftMs % (24 * 60 * 60 * 1000)) / (60 * 60 * 1000));
+      const hours = Math.floor(
+        (timeLeftMs % (24 * 60 * 60 * 1000)) / (60 * 60 * 1000)
+      );
       const mins = Math.floor((timeLeftMs % (60 * 60 * 1000)) / (60 * 1000));
 
       let timeStr = "";
-      if (days > 0) timeStr += `${days} day${days > 1 ? 's' : ''} `;
-      if (hours > 0) timeStr += `${hours} hour${hours > 1 ? 's' : ''} `;
-      if (mins > 0 || timeStr === "") timeStr += `${mins} minute${mins > 1 ? 's' : ''}`;
+      if (days > 0) timeStr += `${days} day${days > 1 ? "s" : ""} `;
+      if (hours > 0) timeStr += `${hours} hour${hours > 1 ? "s" : ""} `;
+      if (mins > 0 || timeStr === "")
+        timeStr += `${mins} minute${mins > 1 ? "s" : ""}`;
 
       await response.send(
         `You've reached the usage limit (**${limiter.limitUsage}x**).\n` +
-        `Reset in: **${timeStr.trim()}**`
+          `Reset in: **${timeStr.trim()}**`
       );
       await response.react("⛔");
       return;
@@ -140,7 +153,9 @@ export default async function commandHandler({ api, event }) {
 
     if (now - lastUsed < cooldownMs) {
       const remaining = Math.ceil((cooldownMs - (now - lastUsed)) / 1000);
-      await response.send(`Please wait **${remaining}s** before using this command again.`);
+      await response.send(
+        `Please wait **${remaining}s** before using this command again.`
+      );
       await response.react("⏳");
       return;
     }
@@ -149,15 +164,27 @@ export default async function commandHandler({ api, event }) {
   }
 
   if (config.maintenance) {
-    const allowedUsers = [...config.developers, ...config.administrators, ...config.moderators];
+    const allowedUsers = [
+      ...config.developers,
+      ...config.administrators,
+      ...config.moderators,
+    ];
     if (!allowedUsers.includes(event.senderID)) {
-      await response.send("The bot is currently under maintenance. Please try again later.");
+      await response.send(
+        "The bot is currently under maintenance. Please try again later."
+      );
       await response.react("🔧");
       return;
     }
   }
 
-  const context: SypherAI.CommandContext = { api, response, args, event, UserInfo };
+  const context: SypherAI.CommandContext = {
+    api,
+    response,
+    args,
+    event,
+    userinfo,
+  };
 
   if (command && command.onCall) {
     try {
@@ -165,9 +192,13 @@ export default async function commandHandler({ api, event }) {
     } catch (error) {
       console.error(`Error executing command '${commandName}':`, error);
       if (error instanceof Error) {
-        await response.send(`Failed to execute command '${commandName}'. If you are the developer, please fix your code.\n\n\`\`\`${error.stack}\`\`\``);
+        await response.send(
+          `Failed to execute command '${commandName}'. If you are the developer, please fix your code.\n\n\`\`\`${error.stack}\`\`\``
+        );
       } else {
-        await response.send(`Failed to execute command '${commandName}'. An unexpected error occurred.`);
+        await response.send(
+          `Failed to execute command '${commandName}'. An unexpected error occurred.`
+        );
       }
     }
   }
