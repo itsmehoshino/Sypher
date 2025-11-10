@@ -2,7 +2,7 @@ import { API, Message } from "biar-fca";
 import Response from "@sy-handler/chat/response";
 
 declare global {
-  var bot: import('events').EventEmitter;
+  var bot: import("events").EventEmitter;
   var Sypher: SypherAI.GlobalSypher;
 
   namespace SypherAI {
@@ -32,21 +32,21 @@ declare global {
       description: string;
       category: string;
       config: {
-      maintenance: boolean;
-      usePrefix: boolean;
-      limiter: {
-        isLimit: boolean;
-        limitUsage: number;
-        time: number;
-       };
+        maintenance: boolean;
+        usePrefix: boolean;
+        limiter: {
+          isLimit: boolean;
+          limitUsage: number;
+          time: number;
+        };
       };
-      onCall: (ctx: CommandContext) => Promise<void>
+      onCall: (ctx: CommandContext) => Promise<void>;
     }
 
     interface EventCMD {
       name: string;
       description: string;
-      onEvent: (ctx: CommandContext) => Promise<void>
+      onEvent: (ctx: CommandContext) => Promise<void>;
     }
 
     interface CommandContext {
@@ -54,7 +54,7 @@ declare global {
       event: Omit<Message, "type"> & { type: "message" | "messageReply" };
       args: string[];
       response: Response;
-      UserInfo:typeof import("@sy-database/userinfo/unserinfo");
+      UserInfo: typeof import("@sy-database/userdata/userdata");
     }
 
     interface SypherUtils {

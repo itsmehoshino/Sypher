@@ -1,4 +1,4 @@
-import { GlobalDB } from "./db";
+import { GlobalDB } from "@sy-database/globalDB";
 
 class UserInfo {
   private static instance: UserInfo;
