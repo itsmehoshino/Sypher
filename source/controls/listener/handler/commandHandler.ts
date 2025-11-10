@@ -2,9 +2,9 @@ import Response from "./chat/response";
 import handleGoibot from "@sy-patches/goibot";
 import UserInfo from "@sy-database/userdata/userdata";
 
-const userinfo = new UserInfo({ api });
-
 export default async function commandHandler({ api, event }) {
+  const userinfo = new UserInfo({ api });
+
   const handled = await handleGoibot({ api, event });
   if (handled) return;
 
