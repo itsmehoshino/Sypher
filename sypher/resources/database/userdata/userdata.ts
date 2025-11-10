@@ -1,12 +1,24 @@
-import { GlobalDB } from '@sy-database/globalDB';
+import { GlobalDB } from "./db";
 
 class UserInfo {
+  private static instance: UserInfo;
   private cache: ReturnType<typeof GlobalDB>;
   private api: any;
 
-  constructor({ api, collection = 'userInfoCache' }) {
-    this.api = api;
+  constructor(api?: any, collection = "userInfoCache") {
+    if (UserInfo.instance) {
+      return UserInfo.instance;
+    }
+
+    this.api = api || (globalThis as any).api;
+    if (!this.api) {
+      throw new Error(
+        "API not provided. Set globalThis.api or pass as new UserInfo(api)"
+      );
+    }
+
     this.cache = GlobalDB(collection);
+    UserInfo.instance = this;
   }
 
   private async loadCache() {
@@ -38,7 +50,7 @@ class UserInfo {
       await this.saveCache({ ...allData, ...newEntry });
       return newEntry[userId];
     } catch (err) {
-      console.error('UserInfo.get error:', err);
+      console.error("UserInfo.get error:", err);
       return null;
     }
   }
@@ -58,7 +70,7 @@ class UserInfo {
 
       return await this.saveCache({ ...allData, ...updated });
     } catch (err) {
-      console.error('UserInfo.set error:', err);
+      console.error("UserInfo.set error:", err);
       return this.loadCache();
     }
   }
@@ -67,7 +79,7 @@ class UserInfo {
     try {
       return await this.loadCache();
     } catch (err) {
-      console.error('UserInfo.getAll error:', err);
+      console.error("UserInfo.getAll error:", err);
       return {};
     }
   }

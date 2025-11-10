@@ -1,40 +1,21 @@
 import mongoose from "mongoose";
 import os from "os";
 
-let connectedURI: string = null;
+let connectedURI: string | null = null;
 
 class CassMongo {
   static schema = new mongoose.Schema({
     key: { type: String, required: true, unique: true },
     value: { type: mongoose.Schema.Types.Mixed, required: true },
   });
+
   collection: string;
   ignoreError: boolean;
   allowClear: boolean;
   #uri: string;
   jsonMode: boolean;
-  KeyValue: mongoose.Model<
-    {
-      key: string;
-      value: any;
-    },
-    {},
-    {},
-    {},
-    mongoose.Schema<
-      any,
-      mongoose.Model<any, any, any, any, any>,
-      {},
-      {},
-      {},
-      {},
-      mongoose.DefaultSchemaOptions,
-      {
-        key: string;
-        value: any;
-      }
-    >
-  >;
+
+  KeyValue: mongoose.Model<{ key: string; value: any }>;
 
   constructor({
     uri,
@@ -68,8 +49,10 @@ class CassMongo {
       value: { type: mongoose.Schema.Types.Mixed, required: true },
     });
 
-    const KeyValue = mongoose.model(collection, keyValueSchema);
-    this.KeyValue = KeyValue;
+    this.KeyValue = mongoose.model<{ key: string; value: any }>(
+      collection,
+      keyValueSchema
+    );
   }
 
   async start() {
@@ -133,7 +116,7 @@ class CassMongo {
     keys = keys.flat();
     try {
       const results = await this.KeyValue.find({ key: { $in: keys } });
-      return results.map((result: { value: any }) => result.value);
+      return results.map((result) => result.value);
     } catch (error) {
       if (this.ignoreError) {
         console.error("Error getting values:", error);
@@ -143,15 +126,12 @@ class CassMongo {
       }
     }
   }
+
   async bulkGetEntries(...keys: any[]): Promise<[string, any][]> {
     keys = keys.flat();
     try {
       const results = await this.KeyValue.find({ key: { $in: keys } });
-
-      return results.map((result: { key: any; value: any }) => [
-        result.key,
-        result.value,
-      ]);
+      return results.map((result) => [result.key, result.value]);
     } catch (error) {
       if (this.ignoreError) {
         console.error("Error getting values:", error);
@@ -259,7 +239,7 @@ class CassMongo {
   async entries() {
     try {
       const results = await this.KeyValue.find({}, "key value");
-      return results.map((doc: { key: any; value: any }) => ({
+      return results.map((doc) => ({
         key: doc.key,
         value: doc.value,
       }));
@@ -296,7 +276,7 @@ class CassMongo {
   async keys() {
     try {
       const results = await this.KeyValue.find({}, "key");
-      return results.map((doc: { key: any }) => doc.key);
+      return results.map((doc) => doc.key);
     } catch (error) {
       if (this.ignoreError) {
         console.error("Error getting keys:", error);
@@ -310,7 +290,7 @@ class CassMongo {
   async values() {
     try {
       const results = await this.KeyValue.find({}, "value");
-      return results.map((doc: { value: any }) => doc.value);
+      return results.map((doc) => doc.value);
     } catch (error) {
       if (this.ignoreError) {
         console.error("Error getting values:", error);
@@ -351,9 +331,10 @@ class CassMongo {
         queryInstance = this.KeyValue.find(filter);
       }
 
-      const result = await queryInstance.lean();
+      const result = await queryInstance.lean().exec();
+      if (!result) return [];
 
-      return result.flatMap((obj) => Object.entries(obj));
+      return (result as any[]).flatMap((obj) => Object.entries(obj));
     } catch (error) {
       if (this.ignoreError) {
         console.error("Error querying data:", error);
@@ -378,12 +359,13 @@ class CassMongoManager {
   }: {
     uri: string;
     collection: string;
+    [key: string]: any;
   }) {
     const key = `${uri}-${collection}`;
     if (!this.#instances.has(key)) {
       this.#instances.set(key, new CassMongo({ uri, collection, ...options }));
     }
-    return this.#instances.get(key);
+    return this.#instances.get(key)!;
   }
 
   getAll() {
