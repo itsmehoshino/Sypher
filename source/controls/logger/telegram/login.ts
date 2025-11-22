@@ -1,17 +1,15 @@
 import TelegramBot from 'node-telegram-bot-api';
+import listener from './setup/setup-telegram';
 
-const token = "";
+const token = "8312411209:AAG2-0TnWpu0PTcaYJyIv59FM1XtSvX3L90";
 
 const bot = new TelegramBot(token, { polling: true });
 
-export default function teleLogin(){
-  bot.onText(/\/start/, (msg) => {
-    const chatId = msg.chat.id;
-    bot.sendMessage(chatId, "Welcome to Sypher.. Eyyy 6 7")
-  })
+bot.onText(/\/start/, (msg) => {
+  const chatId = msg.chat.id;
+  bot.sendMessage(chatId, `👾 Konnichiwa! I'm Sypher, your multiplatform AI assistant. Begin with by typing ${globalThis.Sypher.config.prefix}help to see my commands!`);
+});
 
-  bot.on("message", (msg) => {
-    const chatId = msg.chat.id;
-    bot.sendMessage(chatId, "Nareceive na! Mwaps ...");
-  })
+export default async function teleLogin() {
+  await listener({ bot });
 }

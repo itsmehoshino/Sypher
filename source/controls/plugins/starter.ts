@@ -10,7 +10,7 @@ app.use(express.urlencoded({ extended: true }));
 
 app.use(express.static(path.join(__dirname, "temp")));
 
-app.get("/health", (req, res) => {
+app.get("/health", (_req, res) => {
   res.json({
     status: "online",
     service: "Sypher Engine",

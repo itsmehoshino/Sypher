@@ -1,10 +1,10 @@
-import { API, Message } from "biar-fca";
 import UserInfo from "@sy-database/userdata/userdata";
-import Response from "@sy-handler/chat/response";
+import { log as log2 } from "@sy-custom"
 
 declare global {
   var bot: import("events").EventEmitter;
   var Sypher: SypherAI.GlobalSypher;
+  var log: typeof log2;
 
   namespace SypherAI {
     interface GlobalSypher {
@@ -51,10 +51,7 @@ declare global {
     }
 
     interface CommandContext {
-      api: API;
-      event: Omit<Message, "type"> & { type: "message" | "messageReply" };
       args: string[];
-      response: Response;
       userinfo: InstanceType<typeof UserInfo>;
     }
 

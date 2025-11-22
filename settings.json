@@ -1,10 +1,4 @@
 {
-  "fcaOptions": {
-    "selfListen": false,
-    "autoMarkRead": true,
-    "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Safari/537.36",
-    "listenEvents": true
-  },
   "prefix": "/",
   "subprefix": [".", "*", "@"],
   "maintenance": false,
@@ -13,14 +7,12 @@
     ""
   ],
   "developers": [
-    "61554222594723"
-  ],
-  "moderators": [
-    "", 
     ""
   ],
-  "administrators": [
-    "100080437087855", 
+  "moderators": [
+    ""
+  ],
+  "administrators": [ 
     ""
   ]
 }
