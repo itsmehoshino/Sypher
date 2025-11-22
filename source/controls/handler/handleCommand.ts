@@ -1,1 +1,1 @@
-export default async function ha
+export default async function messageHandler() {}

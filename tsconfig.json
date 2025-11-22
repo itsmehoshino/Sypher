@@ -30,7 +30,7 @@
       "@sy-log": ["./source/controls/plugins/logger"],
       "@sy-core/*": [".source/controls/*"],
       "@sy-custom": ["./source/controls/plugins/logger"],
-      "@sy-handler/*": ["./source/controls/listener/handler/*"],
+      "@sy-handler/*": ["./source/controls/handler/*"],
       "@sy-login": ["./source/controls/logger/botlogger.ts"],
       "@sy-database/*": ["./sypher/resources/database/*"],
       "@sy-styler/*": ["./sypher/resources/styles/*"],

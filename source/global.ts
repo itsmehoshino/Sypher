@@ -1,5 +1,6 @@
 import UserInfo from "@sy-database/userdata/userdata";
-import { log as log2 } from "@sy-custom"
+import { log as log2 } from "@sy-custom";
+import { Message, BotCommand } from "node-telegram-bot-api";
 
 declare global {
   var bot: import("events").EventEmitter;
@@ -44,15 +45,14 @@ declare global {
       onCall: (ctx: CommandContext) => Promise<void>;
     }
 
-    interface EventCMD {
-      name: string;
-      description: string;
-      onEvent: (ctx: CommandContext) => Promise<void>;
-    }
-
     interface CommandContext {
       args: string[];
       userinfo: InstanceType<typeof UserInfo>;
+      bot: BotCommand;
+    }
+
+    interface TeleBotContext {
+      msg: Message;
     }
 
     interface SypherUtils {
