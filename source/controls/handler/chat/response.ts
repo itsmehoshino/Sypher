@@ -7,7 +7,6 @@ export default class Response {
 
   constructor(bot: TelegramBot, msg: Message) {
     this.bot = bot;
-    this.msg = msg;
     this.chatId = msg.chat.id;
     this.messageId = msg.message_id;
   }
@@ -71,4 +70,3 @@ export default class Response {
     return this.send(`Info: ${text}`);
   }
 }
-
