@@ -2,6 +2,7 @@ import UserInfo from "@sy-database/userdata/userdata";
 import { log as log2 } from "@sy-custom";
 import { Message } from "node-telegram-bot-api";
 import type TelegramBot from "node-telegram-bot-api";
+import Response from "./controls/handler/chat/response";
 
 declare global {
   var bot: import("events").EventEmitter;
@@ -50,6 +51,7 @@ declare global {
       args: string[];
       userinfo: InstanceType<typeof UserInfo>;
       bot: TelegramBot;
+      response: Response;
     }
 
     interface TeleBotContext {
