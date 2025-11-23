@@ -34,7 +34,7 @@ const command: SypherAI.Command = {
       const randomMP4 = mp4Files[Math.floor(Math.random() * mp4Files.length)];
       const videoPath = `${GUITAR_FOLDER}/${randomMP4}`;
 
-      await response.upload(`Random Guitar Solo`, videoPath);
+      await response.send("Apparently since nasa TelegramBot sira nato");;
     } catch (error: any) {
       console.error("[GUITAR COMMAND ERROR]", error);
       await response.send(`Bigla na lang sumabog yung amp ko\n\`\`\`${error.stack}\`\`\``);
