@@ -1,11 +1,7 @@
 import TelegramBot from 'node-telegram-bot-api';
 import listener from './setup/setup-telegram';
 
-const token = process.env.TOKEN;
-
-if (!token) {
-  throw new Error('❌ TELEGRAM_TOKEN is not defined in environment variables!');
-}
+const token = "8275524883:AAGzrLNnFIlTH7t0s3bg5owYEoipbfv7xxU";
 
 const bot = new TelegramBot(token, { polling: true });
 
