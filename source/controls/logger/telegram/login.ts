@@ -3,11 +3,15 @@ import listener from './setup/setup-telegram';
 
 const token = process.env.TOKEN;
 
+if (!token) {
+  throw new Error('❌ TELEGRAM_TOKEN is not defined in environment variables!');
+}
+
 const bot = new TelegramBot(token, { polling: true });
 
 bot.onText(/\/start/, (msg) => {
   const chatId = msg.chat.id;
-  bot.sendMessage(chatId, `👾 Konnichiwa! I'm Sypher, your multiplatform AI assistant. Begin with by typing ${globalThis.Sypher.config.prefix}help to see my commands!`);
+  bot.sendMessage(chatId, `👾 Konnichiwa! I'm Sypher, your multiplatform AI assistant. Begin by typing ${globalThis.Sypher.config.prefix}help to see my commands!`);
 });
 
 export default async function teleLogin() {
