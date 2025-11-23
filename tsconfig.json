@@ -28,14 +28,13 @@
       "@sypher": ["./source/sypher"],
       "@sy-utils": ["./source/controls/utils"],
       "@sy-log": ["./source/controls/plugins/logger"],
-      "@sy-core/*": [".source/controls/*"],
+      "@sy-core/*": ["./source/controls/*"],
       "@sy-custom": ["./source/controls/plugins/logger"],
       "@sy-handler/*": ["./source/controls/handler/*"],
       "@sy-login": ["./source/controls/logger/botlogger.ts"],
       "@sy-database/*": ["./sypher/resources/database/*"],
       "@sy-styler/*": ["./sypher/resources/styles/*"],
-      "@sy-patches/*": ["./source/controls/patches/*"],
-      "@sy-database/*": ["./sypher/resources/database/*"]
+      "@sy-patches/*": ["./source/controls/patches/*"]
     }
   },
   "include": ["**/*.js", "**/*.ts"],
