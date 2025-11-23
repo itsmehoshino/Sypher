@@ -5,7 +5,8 @@ export default async function listener({
 }: {
   bot: SypherAI.CommandContext["bot"];
 }) {
-  bot.on("message", async (msg: SypherAI.TeleBotContext["msg"]) => {
-    await messageHandler({ bot, msg }); 
+  bot.on("message", (msg) => {
+    if (!msg.text) return;
+    messageHandler(msg, bot);
   });
 }
