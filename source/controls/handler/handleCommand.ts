@@ -70,7 +70,8 @@ export default async function messageHandler(msg: Message, bot: TelegramBot) {
     };
 
     if (!command) {
-      await response.send(`Command **${commandName}** doesn't exist.`);
+      if (commandName === "start") return;
+      await response.reply(`Command **${commandName}** doesn't exist.`);
       return;
     }
 
@@ -84,7 +85,7 @@ export default async function messageHandler(msg: Message, bot: TelegramBot) {
         ? "Moderator"
         : "User";
 
-      await response.send(
+      await response.reply(
         `You don't have permission.\nRequired: **${needed}**\nYour role: **${current}**`
       );
       return;
@@ -98,7 +99,7 @@ export default async function messageHandler(msg: Message, bot: TelegramBot) {
 
       if (now - last < wait) {
         const left = Math.ceil((wait - (now - last)) / 1000);
-        await response.send(
+        await response.reply(
           `Please wait **${left}s** before using this command again.`
         );
         return;
@@ -107,7 +108,7 @@ export default async function messageHandler(msg: Message, bot: TelegramBot) {
     }
 
     if (config.maintenance && !isStaff) {
-      await response.send(
+      await response.reply(
         "Bot is under **maintenance**.\nOnly staff can use commands."
       );
       return;
@@ -123,22 +124,16 @@ export default async function messageHandler(msg: Message, bot: TelegramBot) {
     try {
       log(
         "CMD",
-        `[TG] ${
-          msg.from?.username || msg.from?.first_name || senderID
-        } → ${commandName}`
+        `[TG] ${msg.from?.username || msg.from?.first_name || senderID} → ${commandName}`
       );
       await command.onCall(context);
     } catch (error) {
       log(
         "ERROR",
-        `Command '${commandName}' failed → ${
-          error instanceof Error ? error.stack : error
-        }`
+        `Command '${commandName}' failed → ${error instanceof Error ? error.stack : error}`
       );
-      await response.send(
-        `Command **${commandName}** crashed.\n\n\`\`\`${
-          error instanceof Error ? error.stack : String(error)
-        }\`\`\``
+      await response.reply(
+        `Command **${commandName}** crashed.\n\n\`\`\`${error instanceof Error ? error.stack : String(error)}\`\`\``
       );
     }
   } catch (err) {
