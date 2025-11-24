@@ -16,12 +16,25 @@ export default class Response {
       const defaultOptions: TelegramBot.SendMessageOptions = {
         parse_mode: "Markdown",
         disable_web_page_preview: true,
-        reply_to_message_id: this.messageId,
         ...options,
       };
       return await this.bot.sendMessage(this.chatId, text, defaultOptions);
     } catch (error) {
       console.error("Failed to send message:", error);
+    }
+  }
+
+  async reply(text: string, options?: TelegramBot.SendMessageOptions) {
+    try {
+      const defaultOptions: TelegramBot.SendMessageOptions = {
+        parse_mode: "Markdown",
+        disable_web_page_preview: true,
+        reply_to_message_id: this.messageId,
+        ...options,
+      };
+      return await this.bot.sendMessage(this.chatId, text, defaultOptions);
+    } catch (error) {
+      console.error("Failed to reply:", error);
     }
   }
 
@@ -52,21 +65,5 @@ export default class Response {
         await this.bot.deleteMessage(this.chatId, this.messageId!);
       } catch {}
     }
-  }
-
-  async reply(text: string, options?: TelegramBot.SendMessageOptions) {
-    return this.send(text, { reply_to_message_id: this.messageId, ...options });
-  }
-
-  async success(text: string) {
-    return this.send(`Success: ${text}`);
-  }
-
-  async error(text: string) {
-    return this.send(`Error: ${text}`);
-  }
-
-  async info(text: string) {
-    return this.send(`Info: ${text}`);
   }
 }
