@@ -16,7 +16,7 @@
 
 ## Introduction
 
-Welcome to **SypherAI** — a **next-generation, fully re-engineered evolution** of the beloved [**HoshinoBETA**](https://github.com/itsmeakhiro/HoshinoBETA) framework. Developed from the ground up by [**Francis Loyd Raval**](https://github.com/itsmehoshino), SypherAI introduces **smarter architecture, modular plugins, lightning-fast event handling**, and **AI-powered automation** that pushes the boundaries of Messenger bot development.
+Welcome to **SypherAI** — a **next-generation, fully re-engineered evolution** of the beloved [**HoshinoBETA**](https://github.com/itsmeakhiro/HoshinoBETA) framework. Developed from the ground up by [**Francis Loyd Raval**](https://github.com/itsmehoshino), SypherAI introduces **smarter architecture, modular plugins, lightning-fast event handling**, and **AI-powered automation** that pushes the boundaries of Multiplatform Chatbot development.
 
  This is not just an upgrade — it's a **complete reinvention** from [**HoshinoBETA**](https://github.com/itsmeakhiro/HoshinoBETA) framework. Every line of code has been rethought, optimized, and future-proofed to support **massive scalability, seamless plugin integration, and real-time adaptability**.
 
@@ -33,11 +33,10 @@ Welcome to **SypherAI** — a **next-generation, fully re-engineered evolution**
 
 ## Start-up
  To start up the system make sure you have the following requirements:
-  - Facebook Account
-  - Cookie Editor
   - Forked Sypher file
+  - Platform of your choice (e.g, Telegram, Discord, WhatsApp)
 
-> _**Note:**_ *If you dont have the Cookie Editor Extension, you may download it [here](https://cookie-editor.com/)*
+> _**Note:**_ *These are just beta testers so you may experiencing bit lag or a bit buggy.*
 
 ## Installing
 
@@ -94,7 +93,7 @@ export default command;
 This system was developed entirely by Francis Loyd Raval. If you want to contribute, report bugs, or request features, feel free to reach out via the following channels. Also, drop a follow to stay updated on releases and behind-the-scenes progress:
 
 > **Facebook:** [**Francis Loyd Raval**](https://www.facebook.com/mannamedfrancis)
-
 > **Discord:** [**Francis Loyd Ravales**](https://discord.gg/5P56MTm8)
-
 > **Messenger:** [**Join the community**](https://m.me/j/AbZXcn8lIkd2YSOj/)
+
+**Last Updated:** *November 25, 2025*
