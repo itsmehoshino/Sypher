@@ -42,6 +42,7 @@ export default async function messageHandler(msg: Message, bot: TelegramBot) {
     if (!isValidPrefix || !commandName) return;
 
     const senderID = msg.from!.id.toString();
+    const userId = senderID;
     const response = new Response(bot, msg);
     const command = globalThis.Sypher.commands.get(commandName);
 
@@ -54,18 +55,12 @@ export default async function messageHandler(msg: Message, bot: TelegramBot) {
 
     const checkPermission = (required: number = 0): boolean => {
       switch (required) {
-        case 0:
-          return true;
-        case 1:
-          return isDev;
-        case 2:
-          return isDev || isAdmin;
-        case 3:
-          return isDev || isAdmin || isMod;
-        case 4:
-          return isStaff;
-        default:
-          return false;
+        case 0: return true;
+        case 1: return isDev;
+        case 2: return isDev || isAdmin;
+        case 3: return isDev || isAdmin || isMod;
+        case 4: return isStaff;
+        default: return false;
       }
     };
 
@@ -77,17 +72,8 @@ export default async function messageHandler(msg: Message, bot: TelegramBot) {
 
     if (command.role !== undefined && !checkPermission(command.role)) {
       const needed = ROLE_NAMES[command.role] ?? "Restricted";
-      const current = isDev
-        ? "Developer"
-        : isAdmin
-        ? "Administrator"
-        : isMod
-        ? "Moderator"
-        : "User";
-
-      await response.reply(
-        `You don't have permission.\nRequired: **${needed}**\nYour role: **${current}**`
-      );
+      const current = isDev ? "Developer" : isAdmin ? "Administrator" : isMod ? "Moderator" : "User";
+      await response.reply(`You don't have permission.\nRequired: **${needed}**\nYour role: **${current}**`);
       return;
     }
 
@@ -99,47 +85,74 @@ export default async function messageHandler(msg: Message, bot: TelegramBot) {
 
       if (now - last < wait) {
         const left = Math.ceil((wait - (now - last)) / 1000);
-        await response.reply(
-          `Please wait **${left}s** before using this command again.`
-        );
+        await response.reply(`Please wait **${left}s** before using this command again.`);
         return;
       }
       globalThis.Sypher.cooldowns.set(key, now);
     }
 
+    const limiter = command.config?.limiter;
+    if (
+      limiter?.isLimit === true &&
+      typeof limiter.limitUsage === "number" &&
+      limiter.limitUsage > 0 &&
+      typeof limiter.time === "number" &&
+      limiter.time > 0
+    ) {
+      const limitKey = `limit_${userId}_${commandName}`;
+      const now = Date.now();
+
+      let usageData = globalThis.Sypher.usageLimits.get(limitKey) || {
+        count: 0,
+        resetAt: now + limiter.time * 24 * 60 * 60 * 1000,
+      };
+
+      if (now >= usageData.resetAt) {
+        usageData = {
+          count: 0,
+          resetAt: now + limiter.time * 24 * 60 * 60 * 1000,
+        };
+      }
+
+      if (usageData.count >= limiter.limitUsage) {
+        const timeLeftMs = usageData.resetAt - now;
+        const days = Math.floor(timeLeftMs / (24 * 60 * 60 * 1000));
+        const hours = Math.floor((timeLeftMs % (24 * 60 * 60 * 1000)) / (60 * 60 * 1000));
+        const mins = Math.floor((timeLeftMs % (60 * 60 * 1000)) / (60 * 1000));
+
+        let timeStr = "";
+        if (days > 0) timeStr += `${days} day${days > 1 ? "s" : ""} `;
+        if (hours > 0) timeStr += `${hours} hour${hours > 1 ? "s" : ""} `;
+        if (mins > 0 || timeStr === "") timeStr += `${mins} minute${mins > 1 ? "s" : ""}`;
+
+        await response.send(
+          `You've reached the usage limit (**${limiter.limitUsage}x**).\n` +
+          `Reset in: **${timeStr.trim()}**`
+        );
+        return;
+      }
+
+      usageData.count += 1;
+      globalThis.Sypher.usageLimits.set(limitKey, usageData);
+    }
+
     if (config.maintenance && !isStaff) {
-      await response.reply(
-        "Bot is under **maintenance**.\nOnly staff can use commands."
-      );
+      await response.reply("Bot is under **maintenance**.\nOnly staff can use commands.");
       return;
     }
 
-    const context = {
-      bot,
-      msg,
-      response,
-      args,
-    };
+    const context = { bot, msg, response, args };
 
     try {
-      log(
-        "CMD",
-        `[TG] ${msg.from?.username || msg.from?.first_name || senderID} → ${commandName}`
-      );
+      log("CMD", `[TG] ${msg.from?.username || msg.from?.first_name || senderID} → ${commandName}`);
       await command.onCall(context);
     } catch (error) {
-      log(
-        "ERROR",
-        `Command '${commandName}' failed → ${error instanceof Error ? error.stack : error}`
-      );
+      log("ERROR", `Command '${commandName}' failed → ${error instanceof Error ? error.stack : error}`);
       await response.reply(
         `Command **${commandName}** crashed.\n\n\`\`\`${error instanceof Error ? error.stack : String(error)}\`\`\``
       );
     }
   } catch (err) {
-    log(
-      "FATAL",
-      `messageHandler error: ${err instanceof Error ? err.stack : err}`
-    );
+    log("FATAL", `messageHandler error: ${err instanceof Error ? err.stack : err}`);
   }
 }
