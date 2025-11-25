@@ -18,8 +18,7 @@ function killOldInstances() {
     for (const line of lines) {
       if (
         line.includes('node') &&
-        (line.includes('telegram') || line.includes('login.ts') || line.includes('login.js')) &&
-        line.includes('polling')
+        (line.includes('telegram') || line.includes('login.ts') || line.includes('login.js'))
       ) {
         const pid = parseInt(line.trim().split(/\s+/)[1]);
         if (pid && pid !== currentPid && pid > 1) {
@@ -31,39 +30,41 @@ function killOldInstances() {
   } catch {}
 }
 
-killOldInstances();
+export default async function teleLogin() {
+  killOldInstances();
 
-const bot = new TelegramBot(TOKEN, { polling: true });
+  const bot = new TelegramBot(TOKEN, { polling: true });
 
-bot.on('polling_error', (error) => {
-  if (error.message.includes('409')) {
-    console.log('Old session terminated. Running fresh!');
-  } else {
-    console.error('Polling error:', error.message);
-  }
-});
+  bot.on('polling_error', (error) => {
+    if (error.message.includes('409')) {
+      console.log('Old session terminated. Running fresh!');
+    } else {
+      console.error('Polling error:', error.message);
+    }
+  });
 
-bot.onText(/\/start/, (msg: Message) => {
-  const chatId = msg.chat.id;
-  const prefix = (globalThis as any).Sypher?.config?.prefix || '!';
-  bot.sendMessage(
-    chatId,
-    `Konnichiwa! I'm Sypher.\n\nType <code>${prefix}help</code> for commands!`,
-    { parse_mode: 'HTML' }
-  );
-});
+  bot.onText(/\/start/, (msg: Message) => {
+    const chatId = msg.chat.id;
+    const prefix = (globalThis as any).Sypher?.config?.prefix || '!';
+    bot.sendMessage(
+      chatId,
+      `Konnichiwa! I'm Sypher.\n\nType <code>${prefix}help</code> for commands!`,
+      { parse_mode: 'HTML' }
+    );
+  });
 
-async function start() {
   try {
     await listener({ bot });
-    console.log('Sypher Telegram Bot is running!');
+    console.log('Sypher Telegram Bot is online and exclusive!`);
   } catch (err) {
-    console.error('Startup failed:', err);
+    console.error('Failed to start bot:', err);
     process.exit(1);
   }
+
+  const shutdown = () => {
+    bot.stopPolling().finally(() => process.exit(0));
+  };
+
+  process.on('SIGINT', shutdown);
+  process.on('SIGTERM', shutdown);
 }
-
-start();
-
-process.on('SIGINT', () => bot.stopPolling);
-process.on('SIGTERM', () => bot.stopPolling);
