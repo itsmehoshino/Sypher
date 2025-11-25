@@ -2,10 +2,10 @@ import TelegramBot, { Message } from 'node-telegram-bot-api';
 import listener from './setup/setup-telegram';
 import { execSync } from 'child_process';
 
-const TOKEN = process.env.TELEGRAM_TOKEN || process.env.TOKEN;
+const TOKEN = process.env.TELEGRAM_TOKEN ?? process.env.TOKEN;
 
 if (!TOKEN) {
-  console.error('TELEGRAM_TOKEN is missing!');
+  console.error('TELEGRAM_TOKEN is missing in environment!');
   process.exit(1);
 }
 
@@ -20,14 +20,20 @@ function killOldInstances() {
         line.includes('node') &&
         (line.includes('telegram') || line.includes('login.ts') || line.includes('login.js'))
       ) {
-        const pid = parseInt(line.trim().split(/\s+/)[1]);
+        const pid = Number(line.trim().split(/\s+/)[1]);
         if (pid && pid !== currentPid && pid > 1) {
-          console.log(`Killing old instance PID ${pid}`);
-          try { process.kill(pid, 'SIGKILL'); } catch {}
+          console.log(`Killing old bot instance PID ${pid}`);
+          try {
+            process.kill(pid, 'SIGKILL');
+          } catch {
+            /* ignore */
+          }
         }
       }
     }
-  } catch {}
+  } catch {
+    /* ps command not available only on *nix – safe to ignore on Windows */
+  }
 }
 
 export default async function teleLogin() {
@@ -37,7 +43,7 @@ export default async function teleLogin() {
 
   bot.on('polling_error', (error) => {
     if (error.message.includes('409')) {
-      console.log('Old session terminated. Running fresh!');
+      console.log('Old polling session terminated by Telegram – now running fresh');
     } else {
       console.error('Polling error:', error.message);
     }
@@ -46,18 +52,19 @@ export default async function teleLogin() {
   bot.onText(/\/start/, (msg: Message) => {
     const chatId = msg.chat.id;
     const prefix = (globalThis as any).Sypher?.config?.prefix || '!';
+
     bot.sendMessage(
       chatId,
-      `Konnichiwa! I'm Sypher.\n\nType <code>${prefix}help</code> for commands!`,
+      `💫 Konnichiwa! I'm Sypher, your multiplatform AI assistant.\n\nType <code>${prefix}help</code> to see all commands!`,
       { parse_mode: 'HTML' }
     );
   });
 
   try {
     await listener({ bot });
-    console.log('Sypher Telegram Bot is online and exclusive!`);
+    console.log('Sypher Telegram Bot is online and running exclusively!');
   } catch (err) {
-    console.error('Failed to start bot:', err);
+    console.error('Failed to initialize bot listeners:', err);
     process.exit(1);
   }
 
@@ -65,6 +72,6 @@ export default async function teleLogin() {
     bot.stopPolling().finally(() => process.exit(0));
   };
 
-  process.on('SIGINT', shutdown);
-  process.on('SIGTERM', shutdown);
+  process.once('SIGINT', shutdown);
+  process.once('SIGTERM', shutdown);
 }
