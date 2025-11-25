@@ -1,15 +1,69 @@
-import TelegramBot from 'node-telegram-bot-api';
+import TelegramBot, { Message } from 'node-telegram-bot-api';
 import listener from './setup/setup-telegram';
+import { execSync } from 'child_process';
 
-const token = "8275524883:AAGzrLNnFIlTH7t0s3bg5owYEoipbfv7xxU";
+const TOKEN = process.env.TELEGRAM_TOKEN || process.env.TOKEN;
 
-const bot = new TelegramBot(token, { polling: false });
+if (!TOKEN) {
+  console.error('TELEGRAM_TOKEN is missing!');
+  process.exit(1);
+}
 
-bot.onText(/\/start/, (msg) => {
-  const chatId = msg.chat.id;
-  bot.sendMessage(chatId, `👾 Konnichiwa! I'm Sypher, your multiplatform AI assistant. Begin by typing ${globalThis.Sypher.config.prefix}help to see my commands!`);
+function killOldInstances() {
+  try {
+    const ps = execSync('ps aux', { encoding: 'utf-8' });
+    const lines = ps.split('\n');
+    const currentPid = process.pid;
+
+    for (const line of lines) {
+      if (
+        line.includes('node') &&
+        (line.includes('telegram') || line.includes('login.ts') || line.includes('login.js')) &&
+        line.includes('polling')
+      ) {
+        const pid = parseInt(line.trim().split(/\s+/)[1]);
+        if (pid && pid !== currentPid && pid > 1) {
+          console.log(`Killing old instance PID ${pid}`);
+          try { process.kill(pid, 'SIGKILL'); } catch {}
+        }
+      }
+    }
+  } catch {}
+}
+
+killOldInstances();
+
+const bot = new TelegramBot(TOKEN, { polling: true });
+
+bot.on('polling_error', (error) => {
+  if (error.message.includes('409')) {
+    console.log('Old session terminated. Running fresh!');
+  } else {
+    console.error('Polling error:', error.message);
+  }
 });
 
-export default async function teleLogin() {
-  await listener({ bot });
+bot.onText(/\/start/, (msg: Message) => {
+  const chatId = msg.chat.id;
+  const prefix = (globalThis as any).Sypher?.config?.prefix || '!';
+  bot.sendMessage(
+    chatId,
+    `Konnichiwa! I'm Sypher.\n\nType <code>${prefix}help</code> for commands!`,
+    { parse_mode: 'HTML' }
+  );
+});
+
+async function start() {
+  try {
+    await listener({ bot });
+    console.log('Sypher Telegram Bot is running!');
+  } catch (err) {
+    console.error('Startup failed:', err);
+    process.exit(1);
+  }
 }
+
+start();
+
+process.on('SIGINT', () => bot.stopPolling);
+process.on('SIGTERM', () => bot.stopPolling);
