@@ -11,30 +11,55 @@ export default class Response {
     this.messageId = msg.message_id;
   }
 
+  private get replyOptions() {
+    return { reply_to_message_id: this.messageId };
+  }
+
   async send(text: string, options?: TelegramBot.SendMessageOptions) {
     try {
-      const defaultOptions: TelegramBot.SendMessageOptions = {
+      return await this.bot.sendMessage(this.chatId, text, {
         parse_mode: "Markdown",
         disable_web_page_preview: true,
         ...options,
-      };
-      return await this.bot.sendMessage(this.chatId, text, defaultOptions);
+      });
     } catch (error) {
-      console.error("Failed to send message:", error);
+      console.error("send error:", error);
     }
   }
 
   async reply(text: string, options?: TelegramBot.SendMessageOptions) {
+    return this.send(text, { reply_to_message_id: this.messageId, ...options });
+  }
+
+  async upload(config: {
+    type: "photo" | "audio" | "voice" | "video" | "animation" | "document" | "mediagroup";
+    file: string | Buffer | NodeJS.ReadableStream | TelegramBot.InputMedia[];
+    options?: any;
+  }) {
+    const { type, file, options = {} } = config;
+    const opts = { ...this.replyOptions, ...options };
+
     try {
-      const defaultOptions: TelegramBot.SendMessageOptions = {
-        parse_mode: "Markdown",
-        disable_web_page_preview: true,
-        reply_to_message_id: this.messageId,
-        ...options,
-      };
-      return await this.bot.sendMessage(this.chatId, text, defaultOptions);
+      switch (type) {
+        case "photo":
+          return await this.bot.sendPhoto(this.chatId, file as any, opts);
+        case "audio":
+          return await this.bot.sendAudio(this.chatId, file as any, opts);
+        case "voice":
+          return await this.bot.sendVoice(this.chatId, file as any, opts);
+        case "video":
+          return await this.bot.sendVideo(this.chatId, file as any, opts);
+        case "animation":
+          return await this.bot.sendAnimation(this.chatId, file as any, opts);
+        case "document":
+          return await this.bot.sendDocument(this.chatId, file as any, opts);
+        case "mediagroup":
+          return await this.bot.sendMediaGroup(this.chatId, file as TelegramBot.InputMedia[], opts);
+        default:
+          throw new Error(`Unknown upload type: ${type}`);
+      }
     } catch (error) {
-      console.error("Failed to reply:", error);
+      console.error(`upload(${type}) failed:`, error);
     }
   }
 
@@ -49,21 +74,17 @@ export default class Response {
         ...options,
       });
     } catch (error) {
-      console.error("Failed to edit message:", error);
+      console.error("edit error:", error);
     }
   }
 
   async delete(timeout: number = 0) {
     if (timeout > 0) {
       setTimeout(async () => {
-        try {
-          await this.bot.deleteMessage(this.chatId, this.messageId!);
-        } catch {}
+        try { await this.bot.deleteMessage(this.chatId, this.messageId!); } catch {}
       }, timeout * 1000);
     } else {
-      try {
-        await this.bot.deleteMessage(this.chatId, this.messageId!);
-      } catch {}
+      try { await this.bot.deleteMessage(this.chatId, this.messageId!); } catch {}
     }
   }
 }
