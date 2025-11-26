@@ -31,6 +31,16 @@ export default class Response {
     return this.send(text, { reply_to_message_id: this.messageId, ...options });
   }
 
+  async react(emoji: string) {
+    try {
+      await this.bot.sendReaction(this.chatId, this.messageId!, {
+        reaction: [{ type: "emoji", emoji }],
+      });
+    } catch (error) {
+      console.error("react error:", error);
+    }
+  }
+
   async upload(config: {
     type: "photo" | "audio" | "voice" | "video" | "animation" | "document" | "mediagroup";
     file: string | Buffer | NodeJS.ReadableStream | TelegramBot.InputMedia[];
@@ -56,7 +66,7 @@ export default class Response {
         case "mediagroup":
           return await this.bot.sendMediaGroup(this.chatId, file as TelegramBot.InputMedia[], opts);
         default:
-          throw new Error(`Unknown upload type: ${type}`);
+          throw new Error(`Unknown type: ${type}`);
       }
     } catch (error) {
       console.error(`upload(${type}) failed:`, error);
