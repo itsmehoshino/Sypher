@@ -32,7 +32,7 @@ export default class Response {
   }
 
   async upload(config: {
-    type: "photo" | "audio" | "voice" | "video" | "animation" | "document" | "mediagroup";
+    type: "photo" | "audio" | "voice" | "video" | "document" | "mediagroup";
     file: string | Buffer | NodeJS.ReadableStream | TelegramBot.InputMedia[];
     options?: any;
   }) {
@@ -49,8 +49,6 @@ export default class Response {
           return await this.bot.sendVoice(this.chatId, file as any, opts);
         case "video":
           return await this.bot.sendVideo(this.chatId, file as any, opts);
-        case "animation":
-          return await this.bot.sendAnimation(this.chatId, file as any, opts);
         case "document":
           return await this.bot.sendDocument(this.chatId, file as any, opts);
         case "mediagroup":
