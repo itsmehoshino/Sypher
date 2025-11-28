@@ -76,18 +76,9 @@ export default async function messageHandler(msg: Message, bot: TelegramBot) {
       return;
     }
 
-    if (typeof command.cooldowns === "number" && command.cooldowns > 0) {
-      const key = `${senderID}:${commandName}`;
-      const now = Date.now();
-      const last = globalThis.Sypher.cooldowns.get(key) ?? 0;
-      const wait = command.cooldowns * 1000;
-
-      if (now - last < wait) {
-        const left = Math.ceil((wait - (now - last)) / 1000);
-        await response.reply(`Please wait **${left}s** before using this command again.`);
-        return;
-      }
-      globalThis.Sypher.cooldowns.set(key, now);
+    if (command.config?.maintenance === true) {
+      await response.reply(`**${commandName}** is currently under maintenance or development.\nPlease try again later.`);
+      return;
     }
 
     const limiter = command.config?.limiter;
@@ -126,6 +117,19 @@ export default async function messageHandler(msg: Message, bot: TelegramBot) {
         data.count += 1;
         globalThis.Sypher.usageLimits.set(key, data);
       }
+    } 
+    else if (typeof command.cooldowns === "number" && command.cooldowns > 0) {
+      const key = `${senderID}:${commandName}`;
+      const now = Date.now();
+      const last = globalThis.Sypher.cooldowns.get(key) ?? 0;
+      const wait = command.cooldowns * 1000;
+
+      if (now - last < wait) {
+        const left = Math.ceil((wait - (now - last)) / 1000);
+        await response.reply(`Please wait **${left}s** before using this command again.`);
+        return;
+      }
+      globalThis.Sypher.cooldowns.set(key, now);
     }
 
     if (config.maintenance && !isStaff) {
