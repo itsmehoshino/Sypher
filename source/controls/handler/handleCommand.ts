@@ -92,48 +92,44 @@ export default async function messageHandler(msg: Message, bot: TelegramBot) {
     }
 
     const limiter = command.config?.limiter;
-    if (
-      limiter?.isLimit === true &&
-      typeof limiter.limitUsage === "number" &&
-      limiter.limitUsage > 0 &&
-      typeof limiter.time === "number" &&
-      limiter.time > 0
-    ) {
-      const limitKey = `limit_${userId}_${commandName}`;
+
+    if (limiter?.isLimit === true && limiter.limitUsage > 0 && limiter.time > 0) {
+      const key = `limit_${userId}_${commandName}`;
       const now = Date.now();
 
-      let usageData = globalThis.Sypher.usageLimits.get(limitKey) || {
-        count: 0,
-        resetAt: now + limiter.time * 24 * 60 * 60 * 1000,
-      };
+      let data = globalThis.Sypher.usageLimits.get(key) as
+        | { used: number; nextReset: number }
+        | undefined;
 
-      if (now >= usageData.resetAt) {
-        usageData = {
-          count: 0,
-          resetAt: now + limiter.time * 24 * 60 * 60 * 1000,
+      if (!data || now >= data.nextReset) {
+        data = {
+          used: 1,
+          nextReset: now + limiter.time * 24 * 60 * 60 * 1000,
         };
+        globalThis.Sypher.usageLimits.set(key, data);
       }
+      else if (data.used >= limiter.limitUsage) {
+        const timeLeft = data.nextReset - now;
 
-      if (usageData.count >= limiter.limitUsage) {
-        const timeLeftMs = usageData.resetAt - now;
-        const days = Math.floor(timeLeftMs / (24 * 60 * 60 * 1000));
-        const hours = Math.floor((timeLeftMs % (24 * 60 * 60 * 1000)) / (60 * 60 * 1000));
-        const mins = Math.floor((timeLeftMs % (60 * 60 * 1000)) / (60 * 1000));
+        const days = Math.floor(timeLeft / (24 * 60 * 60 * 1000));
+        const hours = Math.floor((timeLeft % (24 * 60 * 60 * 1000)) / (60 * 60 * 1000));
+        const minutes = Math.floor((timeLeft % (60 * 60 * 1000)) / (60 * 1000));
 
-        let timeStr = "";
-        if (days > 0) timeStr += `${days} day${days > 1 ? "s" : ""} `;
-        if (hours > 0) timeStr += `${hours} hour${hours > 1 ? "s" : ""} `;
-        if (mins > 0 || timeStr === "") timeStr += `${mins} minute${mins > 1 ? "s" : ""}`;
+        let cooldownStr = "";
+        if (days > 0) cooldownStr += `${days} day${days > 1 ? "s" : ""} `;
+        if (hours > 0) cooldownStr += `${hours} hour${hours > 1 ? "s" : ""} `;
+        if (minutes > 0 || cooldownStr === "") cooldownStr += `${minutes} minute${minutes > 1 ? "s" : ""}`;
 
         await response.send(
-          `You've reached the usage limit (**${limiter.limitUsage}x**).\n` +
-          `Reset in: **${timeStr.trim()}**`
+          `You have used up all attempts for **${commandName}**.\n` +
+          `Come back in **${cooldownStr.trim()}**`
         );
         return;
       }
-
-      usageData.count += 1;
-      globalThis.Sypher.usageLimits.set(limitKey, usageData);
+      else {
+        data.used += 1;
+        globalThis.Sypher.usageLimits.set(key, data);
+      }
     }
 
     if (config.maintenance && !isStaff) {
