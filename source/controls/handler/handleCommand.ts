@@ -18,35 +18,49 @@ export default async function messageHandler(msg: Message, bot: TelegramBot) {
     const mainPrefix = config.prefix || "!";
     const subPrefixes = Array.isArray(config.subprefix) ? config.subprefix : [];
 
-    const parts = msg.text.trim().split(" ").filter(Boolean);
+    const text = msg.text.trim();
+    const parts = text.split(/\s+/).filter(Boolean);
     if (parts.length === 0) return;
 
-    let [rawCommand = "", ...args] = parts;
-    let commandName = rawCommand.toLowerCase();
+    let rawTrigger = parts[0].toLowerCase();
+    let hadValidPrefix = false;
 
-    let isValidPrefix = false;
-
-    if (commandName.startsWith(mainPrefix)) {
-      commandName = commandName.slice(mainPrefix.length);
-      isValidPrefix = true;
+    if (rawTrigger.startsWith(mainPrefix)) {
+      rawTrigger = rawTrigger.slice(mainPrefix.length);
+      hadValidPrefix = true;
     } else {
       for (const sp of subPrefixes) {
-        if (commandName.startsWith(sp)) {
-          commandName = commandName.slice(sp.length);
-          isValidPrefix = true;
+        if (rawTrigger.startsWith(sp)) {
+          rawTrigger = rawTrigger.slice(sp.length);
+          hadValidPrefix = true;
           break;
         }
       }
     }
 
-    if (!isValidPrefix || !commandName) return;
+    const command = globalThis.Sypher.commands.get(rawTrigger);
+    if (!command) return;
+
+    const usePrefix = command.config?.usePrefix;
+
+    if (usePrefix === true && !hadValidPrefix) {
+      await new Response(bot, msg).reply(
+        `This command **requires** a prefix.\nUse: <code>${mainPrefix}${rawTrigger}</code>`
+      );
+      return;
+    }
+
+    if (usePrefix === false && hadValidPrefix) {
+      await new Response(bot, msg).reply(
+        `This command **does not require** a prefix.\nJust type: <code>${rawTrigger}</code>`
+      );
+      return;
+    }
 
     const senderID = msg.from!.id.toString();
     const response = new Response(bot, msg);
-    const command = globalThis.Sypher.commands.get(commandName);
 
     const { developers = [], administrators = [], moderators = [] } = config;
-
     const isDev = developers.includes(senderID);
     const isAdmin = administrators.includes(senderID);
     const isMod = moderators.includes(senderID);
@@ -63,12 +77,6 @@ export default async function messageHandler(msg: Message, bot: TelegramBot) {
       }
     };
 
-    if (!command) {
-      if (commandName === "start") return;
-      await response.reply(`Command **${commandName}** doesn't exist.`);
-      return;
-    }
-
     if (command.role !== undefined && !checkPermission(command.role)) {
       const needed = ROLE_NAMES[command.role] ?? "Restricted";
       const current = isDev ? "Developer" : isAdmin ? "Administrator" : isMod ? "Moderator" : "User";
@@ -77,14 +85,14 @@ export default async function messageHandler(msg: Message, bot: TelegramBot) {
     }
 
     if (command.config?.maintenance === true) {
-      await response.reply(`**${commandName}** is currently under maintenance or development.\nPlease try again later.`);
+      await response.reply(`**${rawTrigger}** is currently under maintenance or development.\nPlease try again later.`);
       return;
     }
 
     const limiter = command.config?.limiter;
 
     if (limiter?.isLimit === true && limiter.limitUsage > 0 && limiter.time > 0) {
-      const key = `limit_${senderID}_${commandName}`;
+      const key = `limit_${senderID}_${rawTrigger}`;
       const now = Date.now();
 
       let data = globalThis.Sypher.usageLimits.get(key) as
@@ -92,16 +100,13 @@ export default async function messageHandler(msg: Message, bot: TelegramBot) {
         | undefined;
 
       if (!data || now >= data.resetAt) {
-        data = {
-          count: 1,
-          resetAt: now + limiter.time * 24 * 60 * 60 * 1000,
-        };
+        data = { count: 1, resetAt: now + limiter.time * 24 * 60 * 60 * 1000 };
         globalThis.Sypher.usageLimits.set(key, data);
       } else if (data.count >= limiter.limitUsage) {
         const timeLeft = data.resetAt - now;
         const days = Math.floor(timeLeft / (24 * 60 * 60 * 1000));
         const hours = Math.floor((timeLeft % (24 * 60 * 60 * 1000)) / (60 * 60 * 1000));
-        const minutes = Math.floor((timeLeft % (60 * 60 * 1000)) / (60 * 1000));
+        const minutes = Math.floor((timeLeft % (60 * 60 *1000)) / (60 *1000));
 
         let str = "";
         if (days > 0) str += `${days} day${days > 1 ? "s" : ""} `;
@@ -109,7 +114,7 @@ export default async function messageHandler(msg: Message, bot: TelegramBot) {
         if (minutes > 0 || str === "") str += `${minutes} minute${minutes > 1 ? "s" : ""}`;
 
         await response.send(
-          `You've used up all **${limiter.limitUsage}** attempts for **${commandName}**.\n` +
+          `You've used up all **${limiter.limitUsage}** attempts for **${rawTrigger}**.\n` +
           `Come back in **${str.trim()}**`
         );
         return;
@@ -117,9 +122,9 @@ export default async function messageHandler(msg: Message, bot: TelegramBot) {
         data.count += 1;
         globalThis.Sypher.usageLimits.set(key, data);
       }
-    } 
+    }
     else if (typeof command.cooldowns === "number" && command.cooldowns > 0) {
-      const key = `${senderID}:${commandName}`;
+      const key = `${senderID}:${rawTrigger}`;
       const now = Date.now();
       const last = globalThis.Sypher.cooldowns.get(key) ?? 0;
       const wait = command.cooldowns * 1000;
@@ -137,15 +142,17 @@ export default async function messageHandler(msg: Message, bot: TelegramBot) {
       return;
     }
 
+    const args = hadValidPrefix ? parts.slice(1) : parts.slice(1);
+
     const context = { bot, msg, response, args };
 
     try {
-      log("CMD", `[TG] ${msg.from?.username || msg.from?.first_name || senderID} → ${commandName}`);
+      log("CMD", `[TG] ${msg.from?.username || msg.from?.first_name || senderID} → ${rawTrigger}`);
       await command.onCall(context);
     } catch (error) {
-      log("ERROR", `Command '${commandName}' failed → ${error instanceof Error ? error.stack : error}`);
+      log("ERROR", `Command '${rawTrigger}' failed → ${error instanceof Error ? error.stack : error}`);
       await response.reply(
-        `Command **${commandName}** crashed.\n\n\`\`\`${error instanceof Error ? error.stack : String(error)}\`\`\``
+        `Command **${rawTrigger}** crashed.\n\n\`\`\`${error instanceof Error ? error.stack : String(error)}\`\`\``
       );
     }
   } catch (err) {
