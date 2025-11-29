@@ -1,4 +1,3 @@
-import UserInfo from "@sy-database/userdata/userdata";
 import { log as log2 } from "@sy-custom";
 import { Message } from "node-telegram-bot-api";
 import type TelegramBot from "node-telegram-bot-api";
@@ -49,7 +48,6 @@ declare global {
 
     interface CommandContext {
       args: string[];
-      userinfo: InstanceType<typeof UserInfo>;
       bot: TelegramBot;
       response: Response;
     }
