@@ -50,9 +50,6 @@ declare global {
       args: string[];
       bot: TelegramBot;
       response: Response;
-    }
-
-    interface TeleBotContext {
       msg: Message;
     }
 
