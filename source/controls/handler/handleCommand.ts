@@ -144,7 +144,7 @@ export default async function messageHandler(msg: Message, bot: TelegramBot) {
 
     const args = hadValidPrefix ? parts.slice(1) : parts.slice(1);
 
-    const context = { bot, msg, response, args };
+    const context: SypherAI.CommandContext = { bot, msg, response, args };
 
     try {
       log("CMD", `[TG] ${msg.from?.username || msg.from?.first_name || senderID} → ${rawTrigger}`);
