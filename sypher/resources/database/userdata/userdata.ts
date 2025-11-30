@@ -2,10 +2,8 @@ import { GlobalDB } from '@sy-database/globalDB';
 
 class UserInfo {
   private cache: ReturnType<typeof GlobalDB>;
-  private api: any;
 
-  constructor({ api, collection = 'userInfo' }) {
-    this.api = api;
+  constructor({ collection = 'userInfo' } = {}) {
     this.cache = GlobalDB(collection);
   }
 
@@ -23,20 +21,9 @@ class UserInfo {
   async get(key: string) {
     try {
       const allData = await this.loadFile();
-      if (key in allData) {
-        return allData[key];
-      }
-
-      const info = await this.api.getUserInfo(key);
-      const { [key]: userInfo } = info;
-
-      if (!userInfo) return null;
-
-      allData[key] = { ...userInfo };
-      await this.saveFile(allData);
-      return allData[key];
+      return key in allData ? allData[key] : null;
     } catch (err) {
-      console.log(err);
+      console.error(err);
       return null;
     }
   }
@@ -44,11 +31,11 @@ class UserInfo {
   async set(key: string, newValue: Record<string, any>) {
     try {
       const allData = await this.loadFile();
-      const keyValue = allData[key] || {};
-      const updated = { ...allData, [key]: { ...keyValue, ...newValue } };
+      const existing = allData[key] || {};
+      const updated = { ...allData, [key]: { ...existing, ...newValue } };
       return await this.saveFile(updated);
     } catch (err) {
-      console.log(err);
+      console.error(err);
       return await this.loadFile();
     }
   }
@@ -57,8 +44,20 @@ class UserInfo {
     try {
       return await this.loadFile();
     } catch (err) {
-      console.log(err);
+      console.error(err);
       return {};
+    }
+  }
+
+  async clear() {
+    await this.cache.bulkPut({});
+  }
+
+  async delete(key: string) {
+    const allData = await this.loadFile();
+    if (key in allData) {
+      delete allData[key];
+      await this.saveFile(allData);
     }
   }
 }
